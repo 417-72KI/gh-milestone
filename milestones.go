@@ -12,7 +12,8 @@ func milestones(ctx context.Context, owner string, repo string, state string) ([
 		return nil, err
 	}
 	opts := &github.MilestoneListOptions{
-		State: state,
+		Direction: "desc",
+		State:     state,
 	}
 	milestones, _, err := gh.Issues.ListMilestones(ctx, owner, repo, opts)
 	return milestones, err
