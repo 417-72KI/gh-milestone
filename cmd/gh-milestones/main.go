@@ -2,7 +2,9 @@ package main
 
 import (
 	"os"
+
 	milestones "github.com/417-72KI/gh-milestones"
+	"github.com/cli/cli/v2/pkg/cmd/factory"
 )
 
 type exitCode int
@@ -19,7 +21,8 @@ func main() {
 }
 
 func run() exitCode {
-	rootCmd, err := milestones.NewRootCmd()
+	cmdFactory := factory.New("DEV")
+	rootCmd, err := milestones.NewRootCmd(cmdFactory)
 	if err != nil {
 		return exitStatusError
 	}

@@ -2,37 +2,49 @@ package milestones
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/cli/cli/v2/pkg/cmdutil"
 	"github.com/spf13/cobra"
 )
 
-func newListCmd() *cobra.Command {
+func newListCmd(f *cmdutil.Factory) *cobra.Command {
 	var (
-		closed     bool
-		repository string
-		webMode    bool
+		state   string
+		webMode bool
 	)
 	listCmd := &cobra.Command{
 		Use:   "list [flags]",
 		Short: "List milestones in a repository",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			owner, repo, err := parseRepository(repository)
+			baseRepo, err := f.BaseRepo()
 			if err != nil {
 				return err
 			}
+			host := baseRepo.RepoHost()
+			owner := baseRepo.RepoOwner()
+			repo := baseRepo.RepoName()
+
+			if webMode {
+				milestonesURL := GenerateRepositoryURL(host, owner, repo, "milestones")
+				if f.IOStreams.IsStdoutTTY() {
+					fmt.Fprintf(f.IOStreams.ErrOut, "Opening %s in your browser.\n", milestonesURL)
+				}
+				f.Browser.Browse(milestonesURL)
+				return nil
+			}
 
 			ctx := context.Background()
-			milestones, err := milestones(ctx, owner, repo, closed)
+			milestones, err := milestones(ctx, owner, repo, state)
 			cmd.Print(milestones)
 
 			return nil
 		},
 	}
 
-	listCmd.Flags().BoolVarP(&closed, "closed", "c", false, "Show closed milestones.")
+	cmdutil.StringEnumFlag(listCmd, &state, "state", "s", "open", []string{"open", "closed", "all"}, "Filter by state")
 	listCmd.Flags().BoolVarP(&webMode, "web", "w", false, "List milestones in the web browser")
-	listCmd.Flags().StringVarP(&repository, "repo", "R", "", "Select another repository using the OWNER/REPO format")
 
 	return listCmd
 }
