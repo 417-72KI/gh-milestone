@@ -17,7 +17,7 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 	listCmd := &cobra.Command{
 		Use:   "list [flags]",
 		Short: "List milestones in a repository",
-		Args:  cobra.NoArgs,
+		Args:  cmdutil.NoArgsQuoteReminder,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			baseRepo, err := f.BaseRepo()
 			if err != nil {
