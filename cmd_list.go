@@ -3,6 +3,7 @@ package milestones
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/cli/cli/v2/pkg/cmdutil"
 	"github.com/spf13/cobra"
@@ -36,8 +37,11 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 			}
 
 			ctx := context.Background()
-			milestones, err := milestones(ctx, owner, repo, state)
-			cmd.Print(milestones)
+			listResult, err := milestones(ctx, owner, repo, state)
+			if err != nil {
+				return err
+			}
+			PrintMilestones(f.IOStreams, time.Now(), "", len(listResult), listResult)
 
 			return nil
 		},

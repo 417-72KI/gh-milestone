@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/cli/cli/v2 v2.23.0
+	github.com/cli/go-gh v1.1.0
 	github.com/google/go-github/v47 v47.1.0
 	github.com/spf13/cobra v1.6.1
 	golang.org/x/oauth2 v0.5.0
@@ -17,7 +18,6 @@ require (
 	github.com/briandowns/spinner v1.18.1 // indirect
 	github.com/charmbracelet/glamour v0.5.1-0.20220727184942-e70ff2d969da // indirect
 	github.com/cli/browser v1.1.0 // indirect
-	github.com/cli/go-gh v1.1.0 // indirect
 	github.com/cli/safeexec v1.0.1 // indirect
 	github.com/cli/shurcooL-graphql v0.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
