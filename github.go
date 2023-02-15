@@ -45,7 +45,7 @@ func ghClient(ctx context.Context, ops ...clientOption) (*github.Client, error) 
 	tc := oauth2.NewClient(ctx, ts)
 	client := github.NewClient(tc)
 	baseURL := os.Getenv("GITHUB_BASE_URL")
-	if opts.baseURL != "" {
+	if opts.baseURL != "" && opts.baseURL != "https://github.com" {
 		baseURL = opts.baseURL
 	}
 	if baseURL != "" {
