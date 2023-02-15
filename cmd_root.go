@@ -1,4 +1,4 @@
-package milestones
+package milestone
 
 import (
 	"github.com/cli/cli/v2/pkg/cmdutil"

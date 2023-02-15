@@ -1,4 +1,4 @@
-package milestones
+package milestone
 
 import (
 	"fmt"

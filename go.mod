@@ -1,4 +1,4 @@
-module github.com/417-72KI/gh-milestones
+module github.com/417-72KI/gh-milestone
 
 go 1.19
 

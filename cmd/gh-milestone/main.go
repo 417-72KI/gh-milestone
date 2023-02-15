@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	milestones "github.com/417-72KI/gh-milestones"
+	milestone "github.com/417-72KI/gh-milestone"
 	"github.com/cli/cli/v2/pkg/cmd/factory"
 	"github.com/cli/go-gh"
 )
@@ -30,7 +30,7 @@ func run() exitCode {
 		return exitStatusError
 	}
 	cmdFactory := factory.New(version)
-	rootCmd, err := milestones.NewRootCmd(cmdFactory)
+	rootCmd, err := milestone.NewRootCmd(cmdFactory)
 	if err != nil {
 		return exitStatusError
 	}

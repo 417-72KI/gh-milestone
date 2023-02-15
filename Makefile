@@ -1,11 +1,15 @@
 .SILENT:
 
 list: build
-	gh milestones list
+	gh milestone list
 
 help: build
-	gh milestones --help
+	gh milestone --help
+	gh milestone list --help
 
 build: 
-	cd cmd/gh-milestones && go build
-	mv cmd/gh-milestones/gh-milestones .
+	cd cmd/gh-milestone && go build
+	mv cmd/gh-milestone/gh-milestone .
+
+install: build
+	gh extension install .
