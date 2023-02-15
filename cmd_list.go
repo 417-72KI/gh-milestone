@@ -41,7 +41,16 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			PrintMilestones(f.IOStreams, time.Now(), "", len(listResult), listResult)
+			if len(listResult) == 0 {
+				switch state {
+				case "open":
+					fmt.Fprintf(f.IOStreams.Out, "no open milestones in %s/%s", owner, repo)
+				default:
+					fmt.Fprintf(f.IOStreams.Out, "no milestones match your search in %s/%s", owner, repo)
+				}
+			} else {
+				PrintMilestones(f.IOStreams, time.Now(), "", len(listResult), listResult)
+			}
 
 			return nil
 		},
