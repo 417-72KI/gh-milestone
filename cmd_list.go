@@ -37,7 +37,11 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 			}
 
 			ctx := context.Background()
+			f.IOStreams.DetectTerminalTheme()
+
+			f.IOStreams.StartProgressIndicator()
 			listResult, err := milestones(ctx, owner, repo, state)
+			f.IOStreams.StopProgressIndicator()
 			if err != nil {
 				return err
 			}

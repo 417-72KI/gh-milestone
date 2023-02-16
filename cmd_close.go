@@ -31,10 +31,16 @@ func newCloseCmd(f *cmdutil.Factory) *cobra.Command {
 				}
 				owner := baseRepo.RepoOwner()
 				repo := baseRepo.RepoName()
+				f.IOStreams.DetectTerminalTheme()
+
+				f.IOStreams.StartProgressIndicator()
 				milestone, err := getMilestone(ctx, owner, repo, num)
+				f.IOStreams.StopProgressIndicator()
 				if err != nil {
 					return err
 				}
+
+				f.IOStreams.StartProgressIndicator()
 				result, err := closeMilestone(closeMilestoneOptions{
 					ctx:       ctx,
 					IO:        f.IOStreams,
@@ -42,6 +48,7 @@ func newCloseCmd(f *cmdutil.Factory) *cobra.Command {
 					repo:      repo,
 					milestone: milestone,
 				})
+				f.IOStreams.StopProgressIndicator()
 				if err != nil {
 					return err
 				}
