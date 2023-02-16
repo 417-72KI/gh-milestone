@@ -5,7 +5,6 @@ list: build
 
 help: build
 	gh milestone --help
-	gh milestone list --help
 
 build: 
 	cd cmd/gh-milestone && go build
