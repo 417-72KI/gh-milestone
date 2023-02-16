@@ -30,6 +30,9 @@ func PrintMilestones(io *iostreams.IOStreams, now time.Time, prefix string, tota
 	}
 	table.AddField("Due date", nil, cs.Bold)
 	table.AddField("Number", nil, cs.Bold)
+	table.AddField("Completed", nil, cs.Bold)
+	table.AddField("Open", nil, cs.Bold)
+	table.AddField("Closed", nil, cs.Bold)
 	table.EndRow()
 	for _, milestone := range milestones {
 		title := milestone.Title
@@ -49,6 +52,14 @@ func PrintMilestones(io *iostreams.IOStreams, now time.Time, prefix string, tota
 			AddTimeField(table, now, *dueOn, "", "", cs.Gray)
 		}
 		table.AddField(strconv.Itoa(*milestone.Number), nil, nil)
+
+		completedIssues := float64(0)
+		if *milestone.ClosedIssues+*milestone.OpenIssues != 0 {
+			completedIssues = float64(*milestone.ClosedIssues) / float64(*milestone.ClosedIssues+*milestone.OpenIssues) * 100
+		}
+		table.AddField(fmt.Sprintf("%d%%", int64(completedIssues)), nil, nil)
+		table.AddField(fmt.Sprintf("%d", *milestone.OpenIssues), nil, nil)
+		table.AddField(fmt.Sprintf("%d", *milestone.ClosedIssues), nil, nil)
 
 		table.EndRow()
 	}
