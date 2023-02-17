@@ -53,11 +53,7 @@ func PrintMilestones(io *iostreams.IOStreams, now time.Time, prefix string, tota
 		}
 		table.AddField(strconv.Itoa(*milestone.Number), nil, nil)
 
-		completedIssues := float64(0)
-		if *milestone.ClosedIssues+*milestone.OpenIssues != 0 {
-			completedIssues = float64(*milestone.ClosedIssues) / float64(*milestone.ClosedIssues+*milestone.OpenIssues) * 100
-		}
-		table.AddField(fmt.Sprintf("%d%%", int64(completedIssues)), nil, nil)
+		table.AddField(fmt.Sprintf("%d%%", completionRate(milestone)), nil, nil)
 		table.AddField(fmt.Sprintf("%d", *milestone.OpenIssues), nil, nil)
 		table.AddField(fmt.Sprintf("%d", *milestone.ClosedIssues), nil, nil)
 
@@ -75,6 +71,9 @@ func printRawMilestonePreview(out io.Writer, milestone *github.Milestone) error 
 	fmt.Fprintf(out, "state:\t\t%s\n", *milestone.State)
 	fmt.Fprintf(out, "description:\t%s\n", *milestone.Description)
 	fmt.Fprintf(out, "due on:\t\t%s\n", *milestone.DueOn)
+	fmt.Fprintf(out, "completed:\t\t%d%%\n", completionRate(milestone))
+	fmt.Fprintf(out, "open:\t\t%d\n", *milestone.OpenIssues)
+	fmt.Fprintf(out, "closed:\t\t%d\n", *milestone.ClosedIssues)
 	return nil
 }
 
@@ -85,8 +84,11 @@ func printReadableMilestonePreview(io *iostreams.IOStreams, milestone *github.Mi
 
 	fmt.Fprintf(out, "%s (%d)\n", cs.Bold(*milestone.Title), *milestone.Number)
 	fmt.Fprintf(out,
-		"%s • Last updated %s\n",
+		"%s • %s complete (%s Open %d Closed) • Last updated %s\n",
 		milestoneStateWithColor(cs, now, milestone),
+		cs.Boldf("%d%%", completionRate(milestone)),
+		cs.Boldf("%d", *milestone.OpenIssues),
+		*milestone.ClosedIssues,
 		text.RelativeTimeAgo(now, *milestone.UpdatedAt),
 	)
 
@@ -151,4 +153,14 @@ func AddTimeField(tp utils.TablePrinter, now, t time.Time, prefix string, suffix
 		tf = tf + " " + suffix
 	}
 	tp.AddField(tf, nil, colorFunc)
+}
+
+func completionRate(milestone *github.Milestone) int {
+	open := *milestone.OpenIssues
+	closed := *milestone.ClosedIssues
+	total := open + closed
+	if total == 0 {
+		return 0
+	}
+	return int(float64(closed) / float64(total) * 100)
 }
