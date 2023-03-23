@@ -12,7 +12,7 @@ import (
 	"github.com/cli/cli/v2/pkg/markdown"
 	"github.com/cli/cli/v2/utils"
 	"github.com/cli/go-gh/pkg/text"
-	"github.com/google/go-github/v47/github"
+	"github.com/google/go-github/v50/github"
 )
 
 var whitespaceRE = regexp.MustCompile(`\s+`)
@@ -40,16 +40,15 @@ func PrintMilestones(io *iostreams.IOStreams, now time.Time, prefix string, tota
 		if !table.IsTTY() {
 			table.AddField(*milestone.State, nil, nil)
 		}
-		now = time.Now()
 		dueOn := milestone.DueOn
 		if dueOn == nil {
 			table.AddField("", nil, nil)
-		} else if now.Before(*dueOn) {
+		} else if now.Before(dueOn.Time) {
 			table.AddField(dueOn.Format("2006/01/02"), nil, nil)
 		} else if *milestone.State == "open" {
-			AddTimeField(table, now, *dueOn, "", "(over)", cs.Yellow)
+			AddTimeField(table, now, dueOn.Time, "", "(over)", cs.Yellow)
 		} else {
-			AddTimeField(table, now, *dueOn, "", "", cs.Gray)
+			AddTimeField(table, now, dueOn.Time, "", "", cs.Gray)
 		}
 		table.AddField(strconv.Itoa(*milestone.Number), nil, nil)
 
@@ -89,7 +88,7 @@ func printReadableMilestonePreview(io *iostreams.IOStreams, milestone *github.Mi
 		cs.Boldf("%d%%", completionRate(milestone)),
 		cs.Boldf("%d", *milestone.OpenIssues),
 		*milestone.ClosedIssues,
-		text.RelativeTimeAgo(now, *milestone.UpdatedAt),
+		text.RelativeTimeAgo(now, milestone.UpdatedAt.Time),
 	)
 
 	var (
@@ -114,22 +113,22 @@ func printReadableMilestonePreview(io *iostreams.IOStreams, milestone *github.Mi
 
 func milestoneStateWithColor(cs *iostreams.ColorScheme, now time.Time, milestone *github.Milestone) string {
 	if *milestone.State == "closed" {
-		return fmt.Sprintf("%s %s", cs.Bold("Closed"), text.RelativeTimeAgo(now, *milestone.ClosedAt))
+		return fmt.Sprintf("%s %s", cs.Bold("Closed"), text.RelativeTimeAgo(now, milestone.ClosedAt.Time))
 	}
 	dueDate := milestone.DueOn
 	if dueDate == nil {
 		return "No due date"
-	} else if now.Before(*dueDate) {
+	} else if now.Before(dueDate.Time) {
 		return fmt.Sprintf("Due by %s", dueDate.Format("January 02, 2006"))
 	} else {
-		return fmt.Sprintf("Past due by %s", text.RelativeTimeAgo(now, *dueDate))
+		return fmt.Sprintf("Past due by %s", text.RelativeTimeAgo(now, dueDate.Time))
 	}
 }
 
-func colorForMilestoneState(cs *iostreams.ColorScheme, now time.Time, milestone *github.Milestone) func(string) string {
+func ColorForMilestoneState(cs *iostreams.ColorScheme, now time.Time, milestone *github.Milestone) func(string) string {
 	switch *milestone.State {
 	case "open":
-		if now.Before(*milestone.DueOn) {
+		if now.Before(milestone.DueOn.Time) {
 			return cs.Green
 		} else {
 			return cs.Yellow

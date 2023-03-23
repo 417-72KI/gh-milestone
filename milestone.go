@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/cli/cli/v2/pkg/iostreams"
-	"github.com/google/go-github/v47/github"
+	"github.com/google/go-github/v50/github"
 )
 
 func milestones(ctx context.Context, owner string, repo string, state string) ([]*github.Milestone, error) {
@@ -35,7 +35,7 @@ func getMilestone(ctx context.Context, owner string, repo string, number int) (*
 	return milestone, err
 }
 
-func getMilestoneByURL(ctx context.Context, url *url.URL) (*github.Milestone, error) {
+func GetMilestoneByURL(ctx context.Context, url *url.URL) (*github.Milestone, error) {
 	scheme := url.Scheme
 	host := url.Hostname()
 	path := strings.Split(url.Path, "/")
@@ -50,7 +50,7 @@ func getMilestoneByURL(ctx context.Context, url *url.URL) (*github.Milestone, er
 		return nil, err
 	}
 
-	gh, err := ghClient(ctx, withBaseURL(scheme+"://"+host))
+	gh, err := ghClient(ctx, WithBaseURL(scheme+"://"+host))
 	if err != nil {
 		return nil, err
 	}
@@ -84,10 +84,10 @@ func closeMilestone(opts closeMilestoneOptions) (*github.Milestone, error) {
 	}
 
 	editedMilestone := &github.Milestone{
-		ClosedAt: new(time.Time),
+		ClosedAt: new(github.Timestamp),
 		State:    new(string),
 	}
-	*editedMilestone.ClosedAt = time.Now()
+	*editedMilestone.ClosedAt = github.Timestamp{Time: time.Now()}
 	*editedMilestone.State = "closed"
 
 	result, _, err := gh.Issues.EditMilestone(opts.ctx, opts.owner, opts.repo, number, editedMilestone)

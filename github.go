@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/google/go-github/v47/github"
+	"github.com/google/go-github/v50/github"
 	"golang.org/x/oauth2"
 )
 
@@ -17,13 +17,13 @@ type clientOptions struct {
 
 type clientOption func(*clientOptions)
 
-func withToken(token string) clientOption {
+func WithToken(token string) clientOption {
 	return func(ops *clientOptions) {
 		ops.token = token
 	}
 }
 
-func withBaseURL(baseURL string) clientOption {
+func WithBaseURL(baseURL string) clientOption {
 	return func(ops *clientOptions) {
 		ops.baseURL = baseURL
 	}

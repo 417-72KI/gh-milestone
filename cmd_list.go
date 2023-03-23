@@ -66,7 +66,7 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 	return listCmd
 }
 
-func matchAll(checks ...cobra.PositionalArgs) cobra.PositionalArgs {
+func MatchAll(checks ...cobra.PositionalArgs) cobra.PositionalArgs {
 	return func(cmd *cobra.Command, args []string) error {
 		for _, check := range checks {
 			if err := check(cmd, args); err != nil {
