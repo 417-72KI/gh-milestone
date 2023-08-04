@@ -3,17 +3,28 @@ package milestone
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/cli/cli/v2/pkg/cmdutil"
+	"github.com/cli/cli/v2/pkg/iostreams"
 	"github.com/spf13/cobra"
 )
 
+type listOptions struct {
+	HttpClient func() (*http.Client, error)
+	IO         *iostreams.IOStreams
+
+	State   string
+	WebMode bool
+}
+
 func newListCmd(f *cmdutil.Factory) *cobra.Command {
-	var (
-		state   string
-		webMode bool
-	)
+	opts := &listOptions{
+		IO:         f.IOStreams,
+		HttpClient: f.HttpClient,
+	}
+
 	listCmd := &cobra.Command{
 		Use:   "list [flags]",
 		Short: "List milestones in a repository",
@@ -27,7 +38,7 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 			owner := baseRepo.RepoOwner()
 			repo := baseRepo.RepoName()
 
-			if webMode {
+			if opts.WebMode {
 				milestonesURL := GenerateRepositoryURL(host, owner, repo, "milestones")
 				if f.IOStreams.IsStdoutTTY() {
 					fmt.Fprintf(f.IOStreams.ErrOut, "Opening %s in your browser.\n", milestonesURL)
@@ -40,13 +51,13 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 			f.IOStreams.DetectTerminalTheme()
 
 			f.IOStreams.StartProgressIndicator()
-			listResult, err := milestones(ctx, owner, repo, state)
+			listResult, err := milestones(ctx, owner, repo, opts.State)
 			f.IOStreams.StopProgressIndicator()
 			if err != nil {
 				return err
 			}
 			if len(listResult) == 0 {
-				switch state {
+				switch opts.State {
 				case "open":
 					fmt.Fprintf(f.IOStreams.Out, "no open milestones in %s/%s", owner, repo)
 				default:
@@ -60,8 +71,8 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 		},
 	}
 
-	cmdutil.StringEnumFlag(listCmd, &state, "state", "s", "open", []string{"open", "closed", "all"}, "Filter by state")
-	listCmd.Flags().BoolVarP(&webMode, "web", "w", false, "List milestones in the web browser")
+	cmdutil.StringEnumFlag(listCmd, &opts.State, "state", "s", "open", []string{"open", "closed", "all"}, "Filter by state")
+	listCmd.Flags().BoolVarP(&opts.WebMode, "web", "w", false, "List milestones in the web browser")
 
 	return listCmd
 }
