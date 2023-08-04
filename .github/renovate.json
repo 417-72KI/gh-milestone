@@ -1,11 +1,12 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base",
+    "config:recommended",
     "github>hatena/renovate-config"
   ],
   "labels": ["dependencies"],
-  "schedule": ["after 7pm and before 8am on every weekday", "every weekend"],
+  "schedule": ["monthly"],
+  "automergeSchedule": ["daily"],
   "automerge": true,
   "major": {
     "automerge": false
