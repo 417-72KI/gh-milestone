@@ -67,7 +67,7 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 			f.IOStreams.DetectTerminalTheme()
 
 			f.IOStreams.StartProgressIndicator()
-			listResult, err := milestones(ctx, owner, repo, milestoneState)
+			listResult, err := milestones(ctx, owner, repo, filterOptions)
 			f.IOStreams.StopProgressIndicator()
 			if err != nil {
 				return err
@@ -81,9 +81,37 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 				}
 				return nil
 			}
+			if err := opts.IO.StartPager(); err == nil {
+				defer opts.IO.StopPager()
+			} else {
+				fmt.Fprintf(opts.IO.ErrOut, "failed to start pager: %v\n", err)
+			}
 
 			if opts.Exporter != nil {
-				return opts.Exporter.Write(opts.IO, listResult)
+				outputs := []map[string]any{}
+				for _, result := range listResult {
+					output := map[string]any{}
+					for _, field := range filterOptions.Fields {
+						switch field {
+						case "id":
+							output[field] = *result.ID
+						case "number":
+							output[field] = *result.Number
+						case "state":
+							output[field] = *result.State
+						case "title":
+							output[field] = *result.Title
+						case "createdAt":
+							output[field] = result.CreatedAt.Format(time.RFC3339)
+						case "updatedAt":
+							output[field] = result.UpdatedAt.Format(time.RFC3339)
+						case "url":
+							output[field] = *result.URL
+						}
+					}
+					outputs = append(outputs, output)
+				}
+				return opts.Exporter.Write(opts.IO, outputs)
 			}
 
 			PrintMilestones(f.IOStreams, time.Now(), "", len(listResult), listResult)
