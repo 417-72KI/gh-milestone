@@ -1,0 +1,17 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "github>hatena/renovate-config"
+  ],
+  "labels": ["dependencies"],
+  "schedule": ["monthly"],
+  "automergeSchedule": ["daily"],
+  "automerge": true,
+  "major": {
+    "automerge": false
+  },
+  "minor": {
+    "automerge": false
+  }
+}
