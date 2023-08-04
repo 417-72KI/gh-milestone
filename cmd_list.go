@@ -107,6 +107,10 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 							output[field] = result.UpdatedAt.Format(time.RFC3339)
 						case "url":
 							output[field] = *result.URL
+						case "openIssues":
+							output[field] = *result.OpenIssues
+						case "closedIssues":
+							output[field] = *result.ClosedIssues
 						}
 					}
 					outputs = append(outputs, output)

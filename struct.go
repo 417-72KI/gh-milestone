@@ -8,6 +8,8 @@ var MilestoneFields = []string{
 	"createdAt",
 	"updatedAt",
 	"url",
+	"openIssues",
+	"closedIssues",
 }
 
 type FilterOptions struct {
