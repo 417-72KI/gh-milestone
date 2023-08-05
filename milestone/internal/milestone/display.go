@@ -36,7 +36,7 @@ func PrintMilestones(io *iostreams.IOStreams, now time.Time, prefix string, tota
 	table.EndRow()
 	for _, milestone := range milestones {
 		title := milestone.Title
-		table.AddField(RemoveExcessiveWhitespace(*title), nil, cs.Bold)
+		table.AddField(RemoveExcessiveWhitespace(*title), nil, colorForMilestoneState(cs, now, milestone))
 		if !table.IsTTY() {
 			table.AddField(*milestone.State, nil, nil)
 		}
@@ -129,10 +129,10 @@ func milestoneStateWithColor(cs *iostreams.ColorScheme, now time.Time, milestone
 	}
 }
 
-func ColorForMilestoneState(cs *iostreams.ColorScheme, now time.Time, milestone *github.Milestone) func(string) string {
+func colorForMilestoneState(cs *iostreams.ColorScheme, now time.Time, milestone *github.Milestone) func(string) string {
 	switch *milestone.State {
 	case "open":
-		if now.Before(milestone.DueOn.Time) {
+		if milestone.DueOn == nil || now.Before(milestone.DueOn.Time) {
 			return cs.Green
 		} else {
 			return cs.Yellow
