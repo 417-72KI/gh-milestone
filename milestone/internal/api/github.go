@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/url"
 	"os"
+	"strings"
 
 	"github.com/google/go-github/v50/github"
 	"golang.org/x/oauth2"
@@ -27,6 +29,16 @@ func WithBaseURL(baseURL string) clientOption {
 	return func(ops *clientOptions) {
 		ops.baseURL = baseURL
 	}
+}
+
+func FetchOwnerAndRepoFromURL(url *url.URL) (*string, *string, error) {
+	path := strings.Split(url.Path, "/")
+	if len(path) < 3 {
+		return nil, nil, fmt.Errorf("invalid URL: %s", url)
+	}
+	owner := path[1]
+	repo := path[2]
+	return &owner, &repo, nil
 }
 
 func ghClient(ctx context.Context, ops ...clientOption) (*github.Client, error) {

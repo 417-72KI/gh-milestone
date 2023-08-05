@@ -39,12 +39,14 @@ func GetMilestoneByURL(ctx context.Context, url *url.URL) (*github.Milestone, er
 	scheme := url.Scheme
 	host := url.Hostname()
 	path := strings.Split(url.Path, "/")
+	owner, repo, err := FetchOwnerAndRepoFromURL(url)
+	if err != nil {
+		return nil, err
+	}
 
 	if len(path) != 5 || path[3] != "milestone" {
 		return nil, fmt.Errorf("invalid URL: %s", url)
 	}
-	owner := path[1]
-	repo := path[2]
 	number, err := strconv.Atoi(path[4])
 	if err != nil {
 		return nil, err
@@ -55,7 +57,7 @@ func GetMilestoneByURL(ctx context.Context, url *url.URL) (*github.Milestone, er
 		return nil, err
 	}
 
-	milestone, _, err := gh.Issues.GetMilestone(ctx, owner, repo, number)
+	milestone, _, err := gh.Issues.GetMilestone(ctx, *owner, *repo, number)
 	return milestone, err
 }
 
@@ -74,7 +76,6 @@ func CloseMilestone(ctx context.Context, opts CloseMilestoneOptions) (*github.Mi
 		fmt.Fprintf(opts.IO.ErrOut, cs.Yellow("%s has already closed.\n"), *milestone.HTMLURL)
 		return nil, nil
 	}
-
 	number := *milestone.Number
 
 	gh, err := ghClient(ctx)
