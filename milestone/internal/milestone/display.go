@@ -42,7 +42,7 @@ func PrintMilestones(io *iostreams.IOStreams, now time.Time, prefix string, tota
 		}
 		dueOn := milestone.DueOn
 		if dueOn == nil {
-			table.AddField("", nil, nil)
+			table.AddField("No due date", nil, cs.Gray)
 		} else if now.Before(dueOn.Time) {
 			table.AddField(dueOn.Format("2006/01/02"), nil, nil)
 		} else if *milestone.State == "open" {
