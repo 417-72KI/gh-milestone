@@ -36,13 +36,13 @@ func PrintMilestones(io *iostreams.IOStreams, now time.Time, prefix string, tota
 	table.EndRow()
 	for _, milestone := range milestones {
 		title := milestone.Title
-		table.AddField(RemoveExcessiveWhitespace(*title), nil, cs.Bold)
+		table.AddField(RemoveExcessiveWhitespace(*title), nil, colorForMilestoneState(cs, now, milestone))
 		if !table.IsTTY() {
 			table.AddField(*milestone.State, nil, nil)
 		}
 		dueOn := milestone.DueOn
 		if dueOn == nil {
-			table.AddField("", nil, nil)
+			table.AddField("No due date", nil, cs.Gray)
 		} else if now.Before(dueOn.Time) {
 			table.AddField(dueOn.Format("2006/01/02"), nil, nil)
 		} else if *milestone.State == "open" {
@@ -68,9 +68,17 @@ func PrintMilestones(io *iostreams.IOStreams, now time.Time, prefix string, tota
 func PrintRawMilestonePreview(out io.Writer, milestone *github.Milestone) error {
 	fmt.Fprintf(out, "title:\t\t%s\n", *milestone.Title)
 	fmt.Fprintf(out, "state:\t\t%s\n", *milestone.State)
-	fmt.Fprintf(out, "description:\t%s\n", *milestone.Description)
-	fmt.Fprintf(out, "due on:\t\t%s\n", *milestone.DueOn)
-	fmt.Fprintf(out, "completed:\t\t%d%%\n", completionRate(milestone))
+	description := "(No description provided.)"
+	if milestone.Description != nil && *milestone.Description != "" {
+		description = *milestone.Description
+	}
+	fmt.Fprintf(out, "description:\t%s\n", description)
+	dueOn := "(No due date)"
+	if milestone.DueOn != nil {
+		dueOn = milestone.DueOn.Format("2006-01-02")
+	}
+	fmt.Fprintf(out, "due on:\t\t%s\n", dueOn)
+	fmt.Fprintf(out, "completed:\t%d%%\n", completionRate(milestone))
 	fmt.Fprintf(out, "open:\t\t%d\n", *milestone.OpenIssues)
 	fmt.Fprintf(out, "closed:\t\t%d\n", *milestone.ClosedIssues)
 	return nil
@@ -125,10 +133,10 @@ func milestoneStateWithColor(cs *iostreams.ColorScheme, now time.Time, milestone
 	}
 }
 
-func ColorForMilestoneState(cs *iostreams.ColorScheme, now time.Time, milestone *github.Milestone) func(string) string {
+func colorForMilestoneState(cs *iostreams.ColorScheme, now time.Time, milestone *github.Milestone) func(string) string {
 	switch *milestone.State {
 	case "open":
-		if now.Before(milestone.DueOn.Time) {
+		if milestone.DueOn == nil || now.Before(milestone.DueOn.Time) {
 			return cs.Green
 		} else {
 			return cs.Yellow

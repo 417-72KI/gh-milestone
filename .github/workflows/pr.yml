@@ -11,12 +11,19 @@ concurrency:
   group: ${{ github.head_ref }}-${{ github.workflow }}
   cancel-in-progress: true
 jobs:
-  build:
+  test:
+    name: Test
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v3
         with:
           go-version-file: go.mod
-      - name: Build
-        run: make build
+      - name: Install
+        run: make install
+      - name: Test list
+        run: gh milestone list
+      - name: Test view
+        run: gh milestone view 1
