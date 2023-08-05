@@ -12,14 +12,14 @@ import (
 	"github.com/google/go-github/v50/github"
 )
 
-func milestones(ctx context.Context, owner string, repo string, state string) ([]*github.Milestone, error) {
+func milestones(ctx context.Context, owner string, repo string, filterOpts FilterOptions) ([]*github.Milestone, error) {
 	gh, err := ghClient(ctx)
 	if err != nil {
 		return nil, err
 	}
 	opts := &github.MilestoneListOptions{
 		Direction: "desc",
-		State:     state,
+		State:     filterOpts.State,
 	}
 	milestones, _, err := gh.Issues.ListMilestones(ctx, owner, repo, opts)
 	return milestones, err
