@@ -62,6 +62,10 @@ func newViewCmd(f *cmdutil.Factory) *cobra.Command {
 					f.Browser.Browse(milestoneURL)
 					return nil
 				}
+				if opts.Exporter != nil {
+					output := api.ConvertMilestoneToMap(milestone, opts.Exporter.Fields())
+					return opts.Exporter.Write(opts.IO, output)
+				}
 				if opts.IO.IsStdoutTTY() {
 					return iMilestone.PrintReadableMilestonePreview(opts.IO, milestone)
 				}
@@ -72,5 +76,6 @@ func newViewCmd(f *cmdutil.Factory) *cobra.Command {
 		},
 	}
 	viewCmd.Flags().BoolVarP(&opts.WebMode, "web", "w", false, "List milestones in the web browser")
+	cmdutil.AddJSONFlags(viewCmd, &opts.Exporter, api.MilestoneFields)
 	return viewCmd
 }
