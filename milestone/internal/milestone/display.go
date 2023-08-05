@@ -68,8 +68,12 @@ func PrintMilestones(io *iostreams.IOStreams, now time.Time, prefix string, tota
 func PrintRawMilestonePreview(out io.Writer, milestone *github.Milestone) error {
 	fmt.Fprintf(out, "title:\t\t%s\n", *milestone.Title)
 	fmt.Fprintf(out, "state:\t\t%s\n", *milestone.State)
-	fmt.Fprintf(out, "description:\t%s\n", *milestone.Description)
-	dueOn := "(null)"
+	description := "(No description provided.)"
+	if milestone.Description != nil && *milestone.Description != "" {
+		description = *milestone.Description
+	}
+	fmt.Fprintf(out, "description:\t%s\n", description)
+	dueOn := "(No due date)"
 	if milestone.DueOn != nil {
 		dueOn = milestone.DueOn.Format("2006-01-02")
 	}
