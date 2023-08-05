@@ -6,7 +6,7 @@ on:
       - '.github/workflows/pr.yml'
       - 'go.mod'
       - 'go.sum'
-      - '*.go'
+      - '**/*.go'
 concurrency:
   group: ${{ github.head_ref }}-${{ github.workflow }}
   cancel-in-progress: true
