@@ -34,3 +34,5 @@ jobs:
         run: make install
       - name: Test list
         run: gh milestone list
+      - name: Test view
+        run: gh milestone view 1
