@@ -69,8 +69,12 @@ func PrintRawMilestonePreview(out io.Writer, milestone *github.Milestone) error 
 	fmt.Fprintf(out, "title:\t\t%s\n", *milestone.Title)
 	fmt.Fprintf(out, "state:\t\t%s\n", *milestone.State)
 	fmt.Fprintf(out, "description:\t%s\n", *milestone.Description)
-	fmt.Fprintf(out, "due on:\t\t%s\n", *milestone.DueOn)
-	fmt.Fprintf(out, "completed:\t\t%d%%\n", completionRate(milestone))
+	dueOn := "(null)"
+	if milestone.DueOn != nil {
+		dueOn = milestone.DueOn.Format("2006-01-02")
+	}
+	fmt.Fprintf(out, "due on:\t\t%s\n", dueOn)
+	fmt.Fprintf(out, "completed:\t%d%%\n", completionRate(milestone))
 	fmt.Fprintf(out, "open:\t\t%d\n", *milestone.OpenIssues)
 	fmt.Fprintf(out, "closed:\t\t%d\n", *milestone.ClosedIssues)
 	return nil
@@ -95,7 +99,7 @@ func PrintReadableMilestonePreview(io *iostreams.IOStreams, milestone *github.Mi
 		md  string
 		err error
 	)
-	if milestone.Description == nil || *milestone.Description == "" {
+	if *milestone.Description == "" {
 		md = fmt.Sprintf("\n  %s\n\n", cs.Gray("No description provided"))
 	} else {
 		md, err = markdown.Render(*milestone.Description,
