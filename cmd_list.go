@@ -93,6 +93,8 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 					output := map[string]any{}
 					for _, field := range filterOptions.Fields {
 						switch field {
+						case "url":
+							output[field] = *result.URL
 						case "id":
 							output[field] = *result.ID
 						case "number":
@@ -101,16 +103,22 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 							output[field] = *result.State
 						case "title":
 							output[field] = *result.Title
-						case "createdAt":
-							output[field] = result.CreatedAt.Format(time.RFC3339)
-						case "updatedAt":
-							output[field] = result.UpdatedAt.Format(time.RFC3339)
-						case "url":
-							output[field] = *result.URL
+						case "description":
+							output[field] = *result.Description
+						case "creator":
+							output[field] = *result.Creator.Login
 						case "openIssues":
 							output[field] = *result.OpenIssues
 						case "closedIssues":
 							output[field] = *result.ClosedIssues
+						case "createdAt":
+							output[field] = result.CreatedAt.Format(time.RFC3339)
+						case "updatedAt":
+							output[field] = result.UpdatedAt.Format(time.RFC3339)
+						case "closedAt":
+							output[field] = result.ClosedAt.Format(time.RFC3339)
+						case "dueOn":
+							output[field] = *result.DueOn
 						}
 					}
 					outputs = append(outputs, output)

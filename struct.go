@@ -1,15 +1,19 @@
 package milestone
 
 var MilestoneFields = []string{
+	"url",
 	"id",
 	"number",
 	"state",
 	"title",
-	"createdAt",
-	"updatedAt",
-	"url",
+	"description",
+	"creator",
 	"openIssues",
 	"closedIssues",
+	"createdAt",
+	"updatedAt",
+	"closedAt",
+	"dueOn",
 }
 
 type FilterOptions struct {
