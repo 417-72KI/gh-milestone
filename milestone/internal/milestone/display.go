@@ -95,7 +95,7 @@ func PrintReadableMilestonePreview(io *iostreams.IOStreams, milestone *github.Mi
 		md  string
 		err error
 	)
-	if *milestone.Description == "" {
+	if milestone.Description == nil || *milestone.Description == "" {
 		md = fmt.Sprintf("\n  %s\n\n", cs.Gray("No description provided"))
 	} else {
 		md, err = markdown.Render(*milestone.Description,
