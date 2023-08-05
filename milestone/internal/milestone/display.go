@@ -65,7 +65,7 @@ func PrintMilestones(io *iostreams.IOStreams, now time.Time, prefix string, tota
 	}
 }
 
-func printRawMilestonePreview(out io.Writer, milestone *github.Milestone) error {
+func PrintRawMilestonePreview(out io.Writer, milestone *github.Milestone) error {
 	fmt.Fprintf(out, "title:\t\t%s\n", *milestone.Title)
 	fmt.Fprintf(out, "state:\t\t%s\n", *milestone.State)
 	fmt.Fprintf(out, "description:\t%s\n", *milestone.Description)
@@ -76,7 +76,7 @@ func printRawMilestonePreview(out io.Writer, milestone *github.Milestone) error 
 	return nil
 }
 
-func printReadableMilestonePreview(io *iostreams.IOStreams, milestone *github.Milestone) error {
+func PrintReadableMilestonePreview(io *iostreams.IOStreams, milestone *github.Milestone) error {
 	out := io.Out
 	cs := io.ColorScheme()
 	now := time.Now()

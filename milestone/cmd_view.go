@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/417-72KI/gh-milestone/milestone/internal/api"
+	iMilestone "github.com/417-72KI/gh-milestone/milestone/internal/milestone"
+
 	"github.com/cli/cli/v2/pkg/cmdutil"
 	"github.com/spf13/cobra"
 )
@@ -34,7 +37,7 @@ func newViewCmd(f *cmdutil.Factory) *cobra.Command {
 				owner := baseRepo.RepoOwner()
 				repo := baseRepo.RepoName()
 				io.StartProgressIndicator()
-				milestone, err := getMilestone(ctx, owner, repo, num)
+				milestone, err := api.GetMilestone(ctx, owner, repo, num)
 				io.StopProgressIndicator()
 				if err != nil {
 					return err
@@ -51,9 +54,9 @@ func newViewCmd(f *cmdutil.Factory) *cobra.Command {
 					return nil
 				}
 				if io.IsStdoutTTY() {
-					return printReadableMilestonePreview(io, milestone)
+					return iMilestone.PrintReadableMilestonePreview(io, milestone)
 				}
-				return printRawMilestonePreview(io.Out, milestone)
+				return iMilestone.PrintRawMilestonePreview(io.Out, milestone)
 			} else {
 				return err
 			}

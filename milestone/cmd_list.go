@@ -7,6 +7,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/417-72KI/gh-milestone/milestone/internal/api"
+	"github.com/417-72KI/gh-milestone/milestone/internal/milestone"
+	"github.com/417-72KI/gh-milestone/milestone/internal/utils"
+
 	"github.com/cli/cli/v2/pkg/cmdutil"
 	"github.com/cli/cli/v2/pkg/iostreams"
 	"github.com/spf13/cobra"
@@ -43,7 +47,7 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 			repo := baseRepo.RepoName()
 
 			if opts.WebMode {
-				milestonesURL := GenerateRepositoryURL(host, owner, repo, "milestones")
+				milestonesURL := utils.GenerateRepositoryURL(host, owner, repo, "milestones")
 				if f.IOStreams.IsStdoutTTY() {
 					fmt.Fprintf(f.IOStreams.ErrOut, "Opening %s in your browser.\n", milestonesURL)
 				}
@@ -53,7 +57,7 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 
 			milestoneState := strings.ToLower(opts.State)
 
-			filterOptions := FilterOptions{
+			filterOptions := api.FilterOptions{
 				State:  milestoneState,
 				Author: opts.Author,
 				Fields: []string{},
@@ -67,7 +71,7 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 			f.IOStreams.DetectTerminalTheme()
 
 			f.IOStreams.StartProgressIndicator()
-			listResult, err := milestones(ctx, owner, repo, filterOptions)
+			listResult, err := api.Milestones(ctx, owner, repo, filterOptions)
 			f.IOStreams.StopProgressIndicator()
 			if err != nil {
 				return err
@@ -126,7 +130,7 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 				return opts.Exporter.Write(opts.IO, outputs)
 			}
 
-			PrintMilestones(f.IOStreams, time.Now(), "", len(listResult), listResult)
+			milestone.PrintMilestones(f.IOStreams, time.Now(), "", len(listResult), listResult)
 
 			return nil
 		},
@@ -134,7 +138,7 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 
 	cmdutil.StringEnumFlag(listCmd, &opts.State, "state", "s", "open", []string{"open", "closed", "all"}, "Filter by state")
 	listCmd.Flags().BoolVarP(&opts.WebMode, "web", "w", false, "List milestones in the web browser")
-	cmdutil.AddJSONFlags(listCmd, &opts.Exporter, MilestoneFields)
+	cmdutil.AddJSONFlags(listCmd, &opts.Exporter, api.MilestoneFields)
 
 	return listCmd
 }

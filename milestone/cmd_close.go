@@ -6,6 +6,8 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/417-72KI/gh-milestone/milestone/internal/api"
+
 	"github.com/cli/cli/v2/pkg/cmdutil"
 	"github.com/spf13/cobra"
 )
@@ -34,19 +36,18 @@ func newCloseCmd(f *cmdutil.Factory) *cobra.Command {
 				f.IOStreams.DetectTerminalTheme()
 
 				f.IOStreams.StartProgressIndicator()
-				milestone, err := getMilestone(ctx, owner, repo, num)
+				milestone, err := api.GetMilestone(ctx, owner, repo, num)
 				f.IOStreams.StopProgressIndicator()
 				if err != nil {
 					return err
 				}
 
 				f.IOStreams.StartProgressIndicator()
-				result, err := closeMilestone(closeMilestoneOptions{
-					ctx:       ctx,
+				result, err := api.CloseMilestone(ctx, api.CloseMilestoneOptions{
 					IO:        f.IOStreams,
-					owner:     owner,
-					repo:      repo,
-					milestone: milestone,
+					Owner:     owner,
+					Repo:      repo,
+					Milestone: milestone,
 				})
 				f.IOStreams.StopProgressIndicator()
 				if err != nil {
