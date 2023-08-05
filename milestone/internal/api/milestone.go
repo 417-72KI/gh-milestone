@@ -1,4 +1,4 @@
-package milestone
+package api
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	"github.com/google/go-github/v50/github"
 )
 
-func milestones(ctx context.Context, owner string, repo string, filterOpts FilterOptions) ([]*github.Milestone, error) {
+func Milestones(ctx context.Context, owner string, repo string, filterOpts FilterOptions) ([]*github.Milestone, error) {
 	gh, err := ghClient(ctx)
 	if err != nil {
 		return nil, err
@@ -25,7 +25,7 @@ func milestones(ctx context.Context, owner string, repo string, filterOpts Filte
 	return milestones, err
 }
 
-func getMilestone(ctx context.Context, owner string, repo string, number int) (*github.Milestone, error) {
+func GetMilestone(ctx context.Context, owner string, repo string, number int) (*github.Milestone, error) {
 	gh, err := ghClient(ctx)
 	if err != nil {
 		return nil, err
@@ -59,17 +59,16 @@ func GetMilestoneByURL(ctx context.Context, url *url.URL) (*github.Milestone, er
 	return milestone, err
 }
 
-type closeMilestoneOptions struct {
-	ctx       context.Context
+type CloseMilestoneOptions struct {
 	IO        *iostreams.IOStreams
-	owner     string
-	repo      string
-	milestone *github.Milestone
+	Owner     string
+	Repo      string
+	Milestone *github.Milestone
 }
 
-func closeMilestone(opts closeMilestoneOptions) (*github.Milestone, error) {
+func CloseMilestone(ctx context.Context, opts CloseMilestoneOptions) (*github.Milestone, error) {
 	cs := opts.IO.ColorScheme()
-	milestone := opts.milestone
+	milestone := opts.Milestone
 
 	if *milestone.State == "closed" {
 		fmt.Fprintf(opts.IO.ErrOut, cs.Yellow("%s has already closed."), *milestone.HTMLURL)
@@ -78,7 +77,7 @@ func closeMilestone(opts closeMilestoneOptions) (*github.Milestone, error) {
 
 	number := *milestone.Number
 
-	gh, err := ghClient(opts.ctx)
+	gh, err := ghClient(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -90,6 +89,6 @@ func closeMilestone(opts closeMilestoneOptions) (*github.Milestone, error) {
 	*editedMilestone.ClosedAt = github.Timestamp{Time: time.Now()}
 	*editedMilestone.State = "closed"
 
-	result, _, err := gh.Issues.EditMilestone(opts.ctx, opts.owner, opts.repo, number, editedMilestone)
+	result, _, err := gh.Issues.EditMilestone(ctx, opts.Owner, opts.Repo, number, editedMilestone)
 	return result, err
 }

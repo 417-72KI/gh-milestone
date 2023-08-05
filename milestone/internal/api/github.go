@@ -1,4 +1,4 @@
-package milestone
+package api
 
 import (
 	"context"

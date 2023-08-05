@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	milestone "github.com/417-72KI/gh-milestone"
+	"github.com/417-72KI/gh-milestone/milestone"
 	"github.com/cli/cli/v2/pkg/cmd/factory"
 	"github.com/cli/go-gh"
 )

@@ -1,4 +1,4 @@
-package milestone
+package api
 
 var MilestoneFields = []string{
 	"url",
