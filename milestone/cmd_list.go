@@ -17,20 +17,20 @@ import (
 )
 
 type listOptions struct {
-	HttpClient func() (*http.Client, error)
-	IO         *iostreams.IOStreams
+	HttpClient    func() (*http.Client, error)
+	IO            *iostreams.IOStreams
+	OpenInBrowser func(string) error
 
-	Assignee string
 	State    string
-	Author   string
 	WebMode  bool
 	Exporter cmdutil.Exporter
 }
 
 func newListCmd(f *cmdutil.Factory) *cobra.Command {
 	opts := &listOptions{
-		IO:         f.IOStreams,
-		HttpClient: f.HttpClient,
+		HttpClient:    f.HttpClient,
+		IO:            f.IOStreams,
+		OpenInBrowser: f.Browser.Browse,
 	}
 
 	listCmd := &cobra.Command{
@@ -46,63 +46,7 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 			owner := baseRepo.RepoOwner()
 			repo := baseRepo.RepoName()
 
-			if opts.WebMode {
-				milestonesURL := utils.GenerateRepositoryURL(host, owner, repo, "milestones")
-				if f.IOStreams.IsStdoutTTY() {
-					fmt.Fprintf(f.IOStreams.ErrOut, "Opening %s in your browser.\n", milestonesURL)
-				}
-				f.Browser.Browse(milestonesURL)
-				return nil
-			}
-
-			milestoneState := strings.ToLower(opts.State)
-
-			filterOptions := api.FilterOptions{
-				State:  milestoneState,
-				Author: opts.Author,
-				Fields: []string{},
-			}
-
-			if opts.Exporter != nil {
-				filterOptions.Fields = opts.Exporter.Fields()
-			}
-
-			ctx := context.Background()
-			f.IOStreams.DetectTerminalTheme()
-
-			f.IOStreams.StartProgressIndicator()
-			listResult, err := api.Milestones(ctx, owner, repo, filterOptions)
-			f.IOStreams.StopProgressIndicator()
-			if err != nil {
-				return err
-			}
-			if len(listResult) == 0 && opts.Exporter == nil {
-				switch opts.State {
-				case "open":
-					fmt.Fprintf(f.IOStreams.Out, "no open milestones in %s/%s", owner, repo)
-				default:
-					fmt.Fprintf(f.IOStreams.Out, "no milestones match your search in %s/%s", owner, repo)
-				}
-				return nil
-			}
-			if err := opts.IO.StartPager(); err == nil {
-				defer opts.IO.StopPager()
-			} else {
-				fmt.Fprintf(opts.IO.ErrOut, "failed to start pager: %v\n", err)
-			}
-
-			if opts.Exporter != nil {
-				outputs := []map[string]any{}
-				for _, result := range listResult {
-					output := api.ConvertMilestoneToMap(result, filterOptions.Fields)
-					outputs = append(outputs, output)
-				}
-				return opts.Exporter.Write(opts.IO, outputs)
-			}
-
-			milestone.PrintMilestones(f.IOStreams, time.Now(), "", len(listResult), listResult)
-
-			return nil
+			return listRun(host, owner, repo, opts)
 		},
 	}
 
@@ -113,13 +57,60 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 	return listCmd
 }
 
-func MatchAll(checks ...cobra.PositionalArgs) cobra.PositionalArgs {
-	return func(cmd *cobra.Command, args []string) error {
-		for _, check := range checks {
-			if err := check(cmd, args); err != nil {
-				return err
-			}
+func listRun(host string, owner string, repo string, opts *listOptions) error {
+	if opts.WebMode {
+		milestonesURL := utils.GenerateRepositoryURL(host, owner, repo, "milestones")
+		if opts.IO.IsStdoutTTY() {
+			fmt.Fprintf(opts.IO.ErrOut, "Opening %s in your browser.\n", milestonesURL)
+		}
+		return opts.OpenInBrowser(milestonesURL)
+	}
+
+	milestoneState := strings.ToLower(opts.State)
+
+	filterOptions := api.FilterOptions{
+		State:  milestoneState,
+		Fields: []string{},
+	}
+
+	if opts.Exporter != nil {
+		filterOptions.Fields = opts.Exporter.Fields()
+	}
+
+	ctx := context.Background()
+	opts.IO.DetectTerminalTheme()
+
+	opts.IO.StartProgressIndicator()
+	listResult, err := api.Milestones(ctx, owner, repo, filterOptions)
+	opts.IO.StopProgressIndicator()
+	if err != nil {
+		return err
+	}
+	if len(listResult) == 0 && opts.Exporter == nil {
+		switch opts.State {
+		case "open":
+			fmt.Fprintf(opts.IO.Out, "no open milestones in %s/%s", owner, repo)
+		default:
+			fmt.Fprintf(opts.IO.Out, "no milestones match your search in %s/%s", owner, repo)
 		}
 		return nil
 	}
+	if err := opts.IO.StartPager(); err == nil {
+		defer opts.IO.StopPager()
+	} else {
+		fmt.Fprintf(opts.IO.ErrOut, "failed to start pager: %v\n", err)
+	}
+
+	if opts.Exporter != nil {
+		outputs := []map[string]any{}
+		for _, result := range listResult {
+			output := api.ConvertMilestoneToMap(result, filterOptions.Fields)
+			outputs = append(outputs, output)
+		}
+		return opts.Exporter.Write(opts.IO, outputs)
+	}
+
+	milestone.PrintMilestones(opts.IO, time.Now(), "", len(listResult), listResult)
+
+	return nil
 }
