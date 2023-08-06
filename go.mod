@@ -1,6 +1,6 @@
 module github.com/417-72KI/gh-milestone
 
-go 1.19
+go 1.20
 
 require (
 	github.com/cli/cli/v2 v2.25.1
