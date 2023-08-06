@@ -53,7 +53,9 @@ func newCloseCmd(f *cmdutil.Factory) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				fmt.Printf(cs.Green("%s closed."), *result.HTMLURL)
+				if result != nil {
+					fmt.Printf(cs.Green("%s closed."), *result.HTMLURL)
+				}
 			} else if url, err := url.Parse(selector); err == nil {
 				return fmt.Errorf("closing by URL not supported yet. %s", url)
 				// milestone, err := getMilestoneByURL(ctx, url)

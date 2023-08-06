@@ -71,7 +71,7 @@ func CloseMilestone(ctx context.Context, opts CloseMilestoneOptions) (*github.Mi
 	milestone := opts.Milestone
 
 	if *milestone.State == "closed" {
-		fmt.Fprintf(opts.IO.ErrOut, cs.Yellow("%s has already closed."), *milestone.HTMLURL)
+		fmt.Fprintf(opts.IO.ErrOut, cs.Yellow("%s has already closed.\n"), *milestone.HTMLURL)
 		return nil, nil
 	}
 
