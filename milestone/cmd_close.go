@@ -19,7 +19,7 @@ func newCloseCmd(f *cmdutil.Factory) *cobra.Command {
 	cs := f.IOStreams.ColorScheme()
 
 	closeCmd := &cobra.Command{
-		Use:   "close <number>", /* "close {<number> | <url>}", */
+		Use:   "close {<number> | <url>}",
 		Short: "Close milestone",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
