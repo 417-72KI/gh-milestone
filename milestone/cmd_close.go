@@ -19,7 +19,7 @@ func newCloseCmd(f *cmdutil.Factory) *cobra.Command {
 	cs := f.IOStreams.ColorScheme()
 
 	closeCmd := &cobra.Command{
-		Use:   "close <number>", /* "close {<number> | <url>}", */
+		Use:   "close {<number> | <url>}",
 		Short: "Close milestone",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -53,22 +53,31 @@ func newCloseCmd(f *cmdutil.Factory) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				fmt.Printf(cs.Green("%s closed."), *result.HTMLURL)
+				if result != nil {
+					fmt.Printf(cs.Green("%s closed."), *result.HTMLURL)
+				}
 			} else if url, err := url.Parse(selector); err == nil {
-				return fmt.Errorf("closing by URL not supported yet. %s", url)
-				// milestone, err := getMilestoneByURL(ctx, url)
-				// if err != nil {
-				// 	return err
-				// }
-				// result, err = closeMilestone(closeMilestoneOptions{
-				// 	ctx:       ctx,
-				// 	IO:        f.IOStreams,
-				// 	milestone: milestone,
-				// })
-				// if err != nil {
-				// 	return err
-				// }
-				// fmt.Printf(cs.Green("%s closed."), *result.HTMLURL)
+				milestone, err := api.GetMilestoneByURL(ctx, url)
+				if err != nil {
+					return err
+				}
+				owner, repo, err := api.FetchOwnerAndRepoFromURL(url)
+				if err != nil {
+					return err
+				}
+
+				result, err := api.CloseMilestone(ctx, api.CloseMilestoneOptions{
+					IO:        f.IOStreams,
+					Owner:     *owner,
+					Repo:      *repo,
+					Milestone: milestone,
+				})
+				if err != nil {
+					return err
+				}
+				if result != nil {
+					fmt.Printf(cs.Green("%s closed."), *result.HTMLURL)
+				}
 			} else {
 				return err
 			}
