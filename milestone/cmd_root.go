@@ -16,6 +16,7 @@ func NewRootCmd(f *cmdutil.Factory) (*cobra.Command, error) {
 	cmdutil.AddGroup(rootCmd, "General commands",
 		newListCmd(f),
 		newViewCmd(f),
+		newCreateCmd(f),
 		newCloseCmd(f),
 		newReopenCmd(f),
 	)

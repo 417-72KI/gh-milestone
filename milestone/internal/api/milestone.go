@@ -61,6 +61,22 @@ func GetMilestoneByURL(ctx context.Context, url *url.URL) (*github.Milestone, er
 	return milestone, err
 }
 
+type CreateMilestoneOptions struct {
+	IO        *iostreams.IOStreams
+	Owner     string
+	Repo      string
+	Milestone *github.Milestone
+}
+
+func CreateMilestone(ctx context.Context, opts CreateMilestoneOptions) (*github.Milestone, error) {
+	gh, err := ghClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+	result, _, err := gh.Issues.CreateMilestone(ctx, opts.Owner, opts.Repo, opts.Milestone)
+	return result, err
+}
+
 type CloseMilestoneOptions struct {
 	IO        *iostreams.IOStreams
 	Owner     string
