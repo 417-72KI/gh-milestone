@@ -93,3 +93,36 @@ func CloseMilestone(ctx context.Context, opts CloseMilestoneOptions) (*github.Mi
 	result, _, err := gh.Issues.EditMilestone(ctx, opts.Owner, opts.Repo, number, editedMilestone)
 	return result, err
 }
+
+type ReopenMilestoneOptions struct {
+	IO        *iostreams.IOStreams
+	Owner     string
+	Repo      string
+	Milestone *github.Milestone
+}
+
+func ReopenMilestone(ctx context.Context, opts ReopenMilestoneOptions) (*github.Milestone, error) {
+	cs := opts.IO.ColorScheme()
+	milestone := opts.Milestone
+
+	if *milestone.State != "closed" {
+		fmt.Fprintf(opts.IO.ErrOut, cs.Yellow("%s has not closed.\n"), *milestone.HTMLURL)
+		return nil, nil
+	}
+	number := *milestone.Number
+
+	gh, err := ghClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	editedMilestone := &github.Milestone{
+		ClosedAt: new(github.Timestamp),
+		State:    new(string),
+	}
+	*editedMilestone.ClosedAt = github.Timestamp{Time: time.Now()}
+	*editedMilestone.State = "open"
+
+	result, _, err := gh.Issues.EditMilestone(ctx, opts.Owner, opts.Repo, number, editedMilestone)
+	return result, err
+}

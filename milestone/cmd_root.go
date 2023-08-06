@@ -17,6 +17,7 @@ func NewRootCmd(f *cmdutil.Factory) (*cobra.Command, error) {
 		newListCmd(f),
 		newViewCmd(f),
 		newCloseCmd(f),
+		newReopenCmd(f),
 	)
 
 	return rootCmd, nil
