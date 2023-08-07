@@ -19,6 +19,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Close milestone
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           make install
           gh milestone close $(gh milestone list --json title,number --jq ".[] | select(.title == \"${GITHUB_REF#refs/*/}\") | .number")
