@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/cli/cli/v2/pkg/iostreams"
-	"github.com/google/go-github/v50/github"
+	"github.com/google/go-github/v53/github"
 )
 
 func Milestones(ctx context.Context, owner string, repo string, filterOpts FilterOptions) ([]*github.Milestone, error) {
