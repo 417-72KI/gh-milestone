@@ -18,15 +18,18 @@ type viewOptions struct {
 	HttpClient func() (*http.Client, error)
 	IO         *iostreams.IOStreams
 
+	Exporter      cmdutil.Exporter
+	OpenInBrowser func(string) error
+
 	Selector string
 	WebMode  bool
-	Exporter cmdutil.Exporter
 }
 
 func newViewCmd(f *cmdutil.Factory) *cobra.Command {
 	opts := &viewOptions{
-		IO:         f.IOStreams,
-		HttpClient: f.HttpClient,
+		IO:            f.IOStreams,
+		HttpClient:    f.HttpClient,
+		OpenInBrowser: f.Browser.Browse,
 	}
 
 	viewCmd := &cobra.Command{
@@ -36,46 +39,51 @@ func newViewCmd(f *cmdutil.Factory) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			opts.Selector = args[0]
 
-			ctx := context.Background()
-			opts.IO.DetectTerminalTheme()
-			if num, err := strconv.Atoi(opts.Selector); err == nil {
-				baseRepo, err := f.BaseRepo()
-				if err != nil {
-					return err
-				}
-				owner := baseRepo.RepoOwner()
-				repo := baseRepo.RepoName()
-				opts.IO.StartProgressIndicator()
-				milestone, err := api.GetMilestone(ctx, owner, repo, num)
-				opts.IO.StopProgressIndicator()
-				if err != nil {
-					return err
-				}
-				if opts.WebMode {
-					milestoneURL := *milestone.HTMLURL
-					if err != nil {
-						return err
-					}
-					if f.IOStreams.IsStdoutTTY() {
-						fmt.Fprintf(f.IOStreams.ErrOut, "Opening %s in your browser.\n", milestoneURL)
-					}
-					f.Browser.Browse(milestoneURL)
-					return nil
-				}
-				if opts.Exporter != nil {
-					output := api.ConvertMilestoneToMap(milestone, opts.Exporter.Fields())
-					return opts.Exporter.Write(opts.IO, output)
-				}
-				if opts.IO.IsStdoutTTY() {
-					return iMilestone.PrintReadableMilestonePreview(opts.IO, milestone)
-				}
-				return iMilestone.PrintRawMilestonePreview(opts.IO.Out, milestone)
-			} else {
+			baseRepo, err := f.BaseRepo()
+			if err != nil {
 				return err
 			}
+			owner := baseRepo.RepoOwner()
+			repo := baseRepo.RepoName()
+
+			return viewRun(owner, repo, opts)
 		},
 	}
 	viewCmd.Flags().BoolVarP(&opts.WebMode, "web", "w", false, "List milestones in the web browser")
 	cmdutil.AddJSONFlags(viewCmd, &opts.Exporter, api.MilestoneFields)
 	return viewCmd
+}
+
+func viewRun(owner string, repo string, opts *viewOptions) error {
+	ctx := context.Background()
+	opts.IO.DetectTerminalTheme()
+	if num, err := strconv.Atoi(opts.Selector); err == nil {
+		opts.IO.StartProgressIndicator()
+		milestone, err := api.GetMilestone(ctx, owner, repo, num)
+		opts.IO.StopProgressIndicator()
+		if err != nil {
+			return err
+		}
+		if opts.WebMode {
+			milestoneURL := *milestone.HTMLURL
+			if err != nil {
+				return err
+			}
+			if opts.IO.IsStdoutTTY() {
+				fmt.Fprintf(opts.IO.ErrOut, "Opening %s in your browser.\n", milestoneURL)
+			}
+			opts.OpenInBrowser(milestoneURL)
+			return nil
+		}
+		if opts.Exporter != nil {
+			output := api.ConvertMilestoneToMap(milestone, opts.Exporter.Fields())
+			return opts.Exporter.Write(opts.IO, output)
+		}
+		if opts.IO.IsStdoutTTY() {
+			return iMilestone.PrintReadableMilestonePreview(opts.IO, milestone)
+		}
+		return iMilestone.PrintRawMilestonePreview(opts.IO.Out, milestone)
+	} else {
+		return err
+	}
 }
