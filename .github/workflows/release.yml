@@ -18,3 +18,7 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Close milestone
+        run: |
+          make install
+          gh milestone close $(gh milestone list --json title,number --jq ".[] | select(.title == \"${GITHUB_REF#refs/*/}\") | .number")
