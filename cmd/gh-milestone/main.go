@@ -30,10 +30,7 @@ func run() exitCode {
 		return exitStatusError
 	}
 	cmdFactory := factory.New(version)
-	rootCmd, err := milestone.NewRootCmd(cmdFactory)
-	if err != nil {
-		return exitStatusError
-	}
+	rootCmd := milestone.NewRootCmd(cmdFactory)
 	if err := rootCmd.Execute(); err != nil {
 		return exitStatusError
 	}

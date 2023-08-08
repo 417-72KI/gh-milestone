@@ -1,6 +1,6 @@
 # gh-milestone
 
-gh-milestone is a [gh](https://github.com/cli/cli) extension to list/view/close milestones.
+gh-milestone is a [gh](https://github.com/cli/cli) extension to create/list/view/close milestones.
 
 ## Installation
 
@@ -19,6 +19,11 @@ If you use github enterprise, you need to set your api base url to `GITHUB_BASE_
 ### List milestones
 ```
 gh milestone list
+```
+
+### Create a milestone
+```
+gh milestone create -t <title>
 ```
 
 ### View a milestone
