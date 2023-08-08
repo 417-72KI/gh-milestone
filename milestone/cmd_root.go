@@ -1,16 +1,25 @@
 package milestone
 
 import (
+	"github.com/MakeNowJust/heredoc"
 	"github.com/cli/cli/v2/pkg/cmdutil"
 	"github.com/spf13/cobra"
 )
 
-func NewRootCmd(f *cmdutil.Factory) (*cobra.Command, error) {
+func NewRootCmd(f *cmdutil.Factory) *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   "milestones",
 		Short: "Manage milestones.",
 		Long:  `Work with GitHub milestones.`,
+		Example: heredoc.Doc(`
+			$ gh milestone list
+			$ gh milestone view 1
+			$ gh milestone create --title "v1.0" --description "Version 1.0"
+			$ gh milestone close 1
+		`),
 	}
+	rootCmd.SilenceUsage = true
+
 	cmdutil.EnableRepoOverride(rootCmd, f)
 
 	cmdutil.AddGroup(rootCmd, "General commands",
@@ -21,5 +30,5 @@ func NewRootCmd(f *cmdutil.Factory) (*cobra.Command, error) {
 		newReopenCmd(f),
 	)
 
-	return rootCmd, nil
+	return rootCmd
 }
