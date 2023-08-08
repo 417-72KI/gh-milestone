@@ -68,10 +68,13 @@ func newCreateCmd(f *cmdutil.Factory) *cobra.Command {
 			opts.DueOnProvided = cmd.Flags().Changed("due-on")
 
 			if opts.WebMode && (opts.TitleProvided || opts.DescriptionProvided || opts.DueOnProvided) {
-				return fmt.Errorf("the `--web` flag is not supported with `--title`, `--description`, or `--due-on`")
+				return cmdutil.FlagErrorf("the `--web` flag is not supported with `--title`, `--description`, or `--due-on`")
 			}
-
-			return createRun(opts)
+			err = createRun(opts)
+			if cmdutil.IsUserCancellation(err) {
+				cmd.SilenceErrors = true
+			}
+			return err
 		},
 	}
 	fl := createCmd.Flags()
@@ -121,6 +124,16 @@ func createRun(opts *createOptions) error {
 		if err != nil {
 			return err
 		}
+	}
+
+	action, err := iMilestone.ConfirmSubmission(opts.Prompter, false, false)
+	if err != nil {
+		return fmt.Errorf("unable to confirm: %w", err)
+	}
+	if action == iMilestone.CancelAction {
+		fmt.Fprintln(opts.IO.ErrOut, "Discarding.")
+		err = cmdutil.CancelError
+		return err
 	}
 
 	opts.IO.StartProgressIndicator()
