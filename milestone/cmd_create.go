@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/417-72KI/gh-milestone/milestone/internal/api"
+	iMilestone "github.com/417-72KI/gh-milestone/milestone/internal/milestone"
 	"github.com/417-72KI/gh-milestone/milestone/internal/utils"
 	"github.com/MakeNowJust/heredoc"
 	prShared "github.com/cli/cli/v2/pkg/cmd/pr/shared"
@@ -94,16 +95,31 @@ func createRun(opts *createOptions) error {
 	ctx := context.Background()
 	opts.IO.DetectTerminalTheme()
 
-	milestone, err := newMilestone(opts)
+	state, err := newMilestoneState(opts)
 	if err != nil {
 		return err
 	}
+	message := "\nCreating milestone in %s\n\n"
+	cs := opts.IO.ColorScheme()
+
+	if opts.IO.CanPrompt() {
+		fmt.Fprintf(opts.IO.ErrOut, message,
+			cs.Bold(fmt.Sprintf("%s/%s", opts.Owner, opts.Repo)))
+	}
+
+	if !opts.TitleProvided {
+		err = iMilestone.TitleSurvey(opts.Prompter, state)
+		if err != nil {
+			return err
+		}
+	}
+
 	opts.IO.StartProgressIndicator()
-	milestone, err = api.CreateMilestone(ctx, api.CreateMilestoneOptions{
-		IO:        opts.IO,
-		Owner:     opts.Owner,
-		Repo:      opts.Repo,
-		Milestone: milestone,
+	milestone, err := api.CreateMilestone(ctx, api.CreateMilestoneOptions{
+		IO:    opts.IO,
+		Owner: opts.Owner,
+		Repo:  opts.Repo,
+		State: state,
 	})
 	opts.IO.StopProgressIndicator()
 
@@ -113,24 +129,32 @@ func createRun(opts *createOptions) error {
 	return err
 }
 
-func newMilestone(opts *createOptions) (*github.Milestone, error) {
-	milestone := github.Milestone{}
+func newMilestoneState(opts *createOptions) (*iMilestone.MilestoneMetadataState, error) {
+	state := iMilestone.MilestoneMetadataState{}
 	if opts.TitleProvided {
-		milestone.Title = &opts.Title
+		state.Title = opts.Title
 	}
 	if opts.DescriptionProvided {
-		milestone.Description = &opts.Description
+		state.Description = opts.Description
 	}
 	if opts.DueOnProvided {
-		location, err := time.LoadLocation("Local")
+		dueOn, err := parseTime(opts.DueOn)
 		if err != nil {
 			return nil, err
 		}
-		dueOn, err := time.ParseInLocation("2006/01/02", opts.DueOn, location)
-		if err != nil {
-			return nil, err
-		}
-		milestone.DueOn = &github.Timestamp{Time: dueOn}
+		state.DueOn = dueOn
 	}
-	return &milestone, nil
+	return &state, nil
+}
+
+func parseTime(t string) (*github.Timestamp, error) {
+	location, err := time.LoadLocation("Local")
+	if err != nil {
+		return nil, err
+	}
+	dueOn, err := time.ParseInLocation("2006/01/02", t, location)
+	if err != nil {
+		return nil, err
+	}
+	return &github.Timestamp{Time: dueOn}, nil
 }

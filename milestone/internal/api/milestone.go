@@ -10,6 +10,8 @@ import (
 
 	"github.com/cli/cli/v2/pkg/iostreams"
 	"github.com/google/go-github/v53/github"
+
+	iMilestone "github.com/417-72KI/gh-milestone/milestone/internal/milestone"
 )
 
 func Milestones(ctx context.Context, owner string, repo string, filterOpts FilterOptions) ([]*github.Milestone, error) {
@@ -62,10 +64,10 @@ func GetMilestoneByURL(ctx context.Context, url *url.URL) (*github.Milestone, er
 }
 
 type CreateMilestoneOptions struct {
-	IO        *iostreams.IOStreams
-	Owner     string
-	Repo      string
-	Milestone *github.Milestone
+	IO    *iostreams.IOStreams
+	Owner string
+	Repo  string
+	State *iMilestone.MilestoneMetadataState
 }
 
 func CreateMilestone(ctx context.Context, opts CreateMilestoneOptions) (*github.Milestone, error) {
@@ -73,7 +75,8 @@ func CreateMilestone(ctx context.Context, opts CreateMilestoneOptions) (*github.
 	if err != nil {
 		return nil, err
 	}
-	result, _, err := gh.Issues.CreateMilestone(ctx, opts.Owner, opts.Repo, opts.Milestone)
+	milestone := opts.State.ConvertToMilestone()
+	result, _, err := gh.Issues.CreateMilestone(ctx, opts.Owner, opts.Repo, &milestone)
 	return result, err
 }
 
