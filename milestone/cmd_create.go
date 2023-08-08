@@ -1,14 +1,18 @@
 package milestone
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"time"
 
+	"github.com/417-72KI/gh-milestone/milestone/internal/api"
 	"github.com/417-72KI/gh-milestone/milestone/internal/utils"
 	"github.com/MakeNowJust/heredoc"
 	prShared "github.com/cli/cli/v2/pkg/cmd/pr/shared"
 	"github.com/cli/cli/v2/pkg/cmdutil"
 	"github.com/cli/cli/v2/pkg/iostreams"
+	"github.com/google/go-github/v53/github"
 	"github.com/spf13/cobra"
 )
 
@@ -17,6 +21,10 @@ type createOptions struct {
 	IO            *iostreams.IOStreams
 	OpenInBrowser func(string) error
 	Prompter      prShared.Prompt
+
+	Host  string
+	Owner string
+	Repo  string
 
 	TitleProvided       bool
 	DescriptionProvided bool
@@ -38,7 +46,7 @@ func newCreateCmd(f *cmdutil.Factory) *cobra.Command {
 	}
 
 	createCmd := &cobra.Command{
-		Use:   "create {<number> | <url>}",
+		Use:   "create [flags]",
 		Short: "Create milestone",
 		Example: heredoc.Doc(`
 			$ gh milestone create --title "v1.0" --description "Version 1.0"
@@ -50,9 +58,9 @@ func newCreateCmd(f *cmdutil.Factory) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			host := baseRepo.RepoHost()
-			owner := baseRepo.RepoOwner()
-			repo := baseRepo.RepoName()
+			opts.Host = baseRepo.RepoHost()
+			opts.Owner = baseRepo.RepoOwner()
+			opts.Repo = baseRepo.RepoName()
 
 			opts.TitleProvided = cmd.Flags().Changed("title")
 			opts.DescriptionProvided = cmd.Flags().Changed("description")
@@ -62,7 +70,7 @@ func newCreateCmd(f *cmdutil.Factory) *cobra.Command {
 				return fmt.Errorf("the `--web` flag is not supported with `--title`, `--description`, or `--due-on`")
 			}
 
-			return createRun(host, owner, repo, opts)
+			return createRun(opts)
 		},
 	}
 	fl := createCmd.Flags()
@@ -74,14 +82,51 @@ func newCreateCmd(f *cmdutil.Factory) *cobra.Command {
 	return createCmd
 }
 
-func createRun(host string, owner string, repo string, opts *createOptions) error {
+func createRun(opts *createOptions) error {
 	if opts.WebMode {
-		milestonesURL := utils.GenerateRepositoryURL(host, owner, repo, "milestones/new")
+		milestonesURL := utils.GenerateRepositoryURL(opts.Host, opts.Owner, opts.Repo, "milestones/new")
 		if opts.IO.IsStdoutTTY() {
 			fmt.Fprintf(opts.IO.ErrOut, "Opening %s in your browser.\n", milestonesURL)
 		}
 		return opts.OpenInBrowser(milestonesURL)
 	}
 
-	return fmt.Errorf("not implemented")
+	ctx := context.Background()
+	opts.IO.DetectTerminalTheme()
+
+	milestone, err := newMilestone(opts)
+	if err != nil {
+		return err
+	}
+	opts.IO.StartProgressIndicator()
+	milestone, err = api.CreateMilestone(ctx, api.CreateMilestoneOptions{
+		IO:        opts.IO,
+		Owner:     opts.Owner,
+		Repo:      opts.Repo,
+		Milestone: milestone,
+	})
+	opts.IO.StopProgressIndicator()
+
+	if milestone != nil {
+		fmt.Println(*milestone.URL)
+	}
+	return err
+}
+
+func newMilestone(opts *createOptions) (*github.Milestone, error) {
+	milestone := github.Milestone{}
+	if opts.TitleProvided {
+		milestone.Title = &opts.Title
+	}
+	if opts.DescriptionProvided {
+		milestone.Description = &opts.Description
+	}
+	if opts.DueOnProvided {
+		dueOn, err := time.Parse("2006/01/02", opts.DueOn)
+		if err != nil {
+			return nil, err
+		}
+		milestone.DueOn = &github.Timestamp{Time: dueOn}
+	}
+	return &milestone, nil
 }
