@@ -108,7 +108,7 @@ func createRun(opts *createOptions) error {
 	opts.IO.StopProgressIndicator()
 
 	if milestone != nil {
-		fmt.Println(*milestone.URL)
+		fmt.Println(*milestone.HTMLURL)
 	}
 	return err
 }
