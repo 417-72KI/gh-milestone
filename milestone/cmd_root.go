@@ -22,10 +22,12 @@ func NewRootCmd(f *cmdutil.Factory) *cobra.Command {
 
 	cmdutil.EnableRepoOverride(rootCmd, f)
 
-	cmdutil.AddGroup(rootCmd, "General commands",
-		newListCmd(f),
-		newViewCmd(f),
+	cmdutil.AddGroup(rootCmd, "General Commands",
 		newCreateCmd(f),
+		newListCmd(f),
+	)
+	cmdutil.AddGroup(rootCmd, "Targeted Commands",
+		newViewCmd(f),
 		newCloseCmd(f),
 		newReopenCmd(f),
 	)
