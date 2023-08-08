@@ -114,6 +114,15 @@ func createRun(opts *createOptions) error {
 		}
 	}
 
+	if !opts.DescriptionProvided {
+		templateContent := ""
+
+		err = iMilestone.DescriptionSurvey(opts.Prompter, state, templateContent)
+		if err != nil {
+			return err
+		}
+	}
+
 	opts.IO.StartProgressIndicator()
 	milestone, err := api.CreateMilestone(ctx, api.CreateMilestoneOptions{
 		IO:    opts.IO,

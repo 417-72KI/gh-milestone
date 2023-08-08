@@ -1,5 +1,7 @@
 package milestone
 
+import "strings"
+
 type Prompt interface {
 	Input(string, string) (string, error)
 	Select(string, string, []string) (int, error)
@@ -18,6 +20,30 @@ func TitleSurvey(p Prompt, state *MilestoneMetadataState) error {
 	}
 
 	state.Title = result
+
+	return nil
+}
+
+func DescriptionSurvey(p Prompt, state *MilestoneMetadataState, templateContent string) error {
+	if templateContent != "" {
+		if state.Description != "" {
+			// prevent excessive newlines between default body and template
+			state.Description = strings.TrimRight(state.Description, "\n")
+			state.Description += "\n\n"
+		}
+		state.Description += templateContent
+	}
+
+	result, err := p.MarkdownEditor("Description", state.Description, true)
+	if err != nil {
+		return err
+	}
+
+	if state.Description != result {
+		state.MarkDirty()
+	}
+
+	state.Description = result
 
 	return nil
 }
