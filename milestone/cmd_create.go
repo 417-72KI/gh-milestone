@@ -122,7 +122,11 @@ func newMilestone(opts *createOptions) (*github.Milestone, error) {
 		milestone.Description = &opts.Description
 	}
 	if opts.DueOnProvided {
-		dueOn, err := time.Parse("2006/01/02", opts.DueOn)
+		location, err := time.LoadLocation("Local")
+		if err != nil {
+			return nil, err
+		}
+		dueOn, err := time.ParseInLocation("2006/01/02", opts.DueOn, location)
 		if err != nil {
 			return nil, err
 		}
