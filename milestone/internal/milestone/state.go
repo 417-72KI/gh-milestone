@@ -1,6 +1,8 @@
 package milestone
 
 import (
+	"time"
+
 	"github.com/google/go-github/v53/github"
 )
 
@@ -22,4 +24,16 @@ func (m *MilestoneMetadataState) ConvertToMilestone() github.Milestone {
 		Description: &m.Description,
 		DueOn:       m.DueOn,
 	}
+}
+
+func ParseTime(t string) (*github.Timestamp, error) {
+	location, err := time.LoadLocation("Local")
+	if err != nil {
+		return nil, err
+	}
+	dueOn, err := time.ParseInLocation("2006/01/02", t, location)
+	if err != nil {
+		return nil, err
+	}
+	return &github.Timestamp{Time: dueOn}, nil
 }

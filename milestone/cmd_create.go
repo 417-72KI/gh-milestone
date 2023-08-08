@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/417-72KI/gh-milestone/milestone/internal/api"
 	iMilestone "github.com/417-72KI/gh-milestone/milestone/internal/milestone"
@@ -13,7 +12,6 @@ import (
 	prShared "github.com/cli/cli/v2/pkg/cmd/pr/shared"
 	"github.com/cli/cli/v2/pkg/cmdutil"
 	"github.com/cli/cli/v2/pkg/iostreams"
-	"github.com/google/go-github/v53/github"
 	"github.com/spf13/cobra"
 )
 
@@ -126,6 +124,13 @@ func createRun(opts *createOptions) error {
 		}
 	}
 
+	if !opts.DueOnProvided {
+		err = iMilestone.DueOnSurvey(opts.Prompter, state)
+		if err != nil {
+			return err
+		}
+	}
+
 	action, err := iMilestone.ConfirmSubmission(opts.Prompter, false, false)
 	if err != nil {
 		return fmt.Errorf("unable to confirm: %w", err)
@@ -160,23 +165,11 @@ func newMilestoneState(opts *createOptions) (*iMilestone.MilestoneMetadataState,
 		state.Description = opts.Description
 	}
 	if opts.DueOnProvided {
-		dueOn, err := parseTime(opts.DueOn)
+		dueOn, err := iMilestone.ParseTime(opts.DueOn)
 		if err != nil {
 			return nil, err
 		}
 		state.DueOn = dueOn
 	}
 	return &state, nil
-}
-
-func parseTime(t string) (*github.Timestamp, error) {
-	location, err := time.LoadLocation("Local")
-	if err != nil {
-		return nil, err
-	}
-	dueOn, err := time.ParseInLocation("2006/01/02", t, location)
-	if err != nil {
-		return nil, err
-	}
-	return &github.Timestamp{Time: dueOn}, nil
 }

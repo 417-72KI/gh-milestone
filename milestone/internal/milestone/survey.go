@@ -68,6 +68,33 @@ func DescriptionSurvey(p Prompt, state *MilestoneMetadataState, templateContent 
 	return nil
 }
 
+func DueOnSurvey(p Prompt, state *MilestoneMetadataState) error {
+	var dueOn string
+	if state.DueOn != nil {
+		dueOn = state.DueOn.Format("2006/01/02")
+	}
+	result, err := p.Input("Due date (format: YYYY/MM/DD)", dueOn)
+	if err != nil {
+		return err
+	}
+	if strings.TrimSpace(result) == "" {
+		return nil
+	}
+
+	parsedResult, err := ParseTime(result)
+	if err != nil {
+		return fmt.Errorf("could not parse due date: %w", err)
+	}
+
+	if parsedResult != state.DueOn {
+		state.MarkDirty()
+	}
+
+	state.DueOn = parsedResult
+
+	return nil
+}
+
 func ConfirmSubmission(p Prompt, allowPreview, allowMetadata bool) (Action, error) {
 	var options []string
 	options = append(options, submitLabel)
