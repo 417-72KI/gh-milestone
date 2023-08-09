@@ -6,9 +6,11 @@ import (
 	"net/http"
 
 	"github.com/417-72KI/gh-milestone/milestone/internal/api"
+	"github.com/417-72KI/gh-milestone/milestone/internal/ghrepo"
 	iMilestone "github.com/417-72KI/gh-milestone/milestone/internal/milestone"
-	"github.com/417-72KI/gh-milestone/milestone/internal/utils"
+
 	"github.com/MakeNowJust/heredoc"
+
 	prShared "github.com/cli/cli/v2/pkg/cmd/pr/shared"
 	"github.com/cli/cli/v2/pkg/cmdutil"
 	"github.com/cli/cli/v2/pkg/iostreams"
@@ -21,9 +23,7 @@ type createOptions struct {
 	OpenInBrowser func(string) error
 	Prompter      prShared.Prompt
 
-	Host  string
-	Owner string
-	Repo  string
+	Repo ghrepo.Interface
 
 	TitleProvided       bool
 	DescriptionProvided bool
@@ -57,9 +57,7 @@ func newCreateCmd(f *cmdutil.Factory) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			opts.Host = baseRepo.RepoHost()
-			opts.Owner = baseRepo.RepoOwner()
-			opts.Repo = baseRepo.RepoName()
+			opts.Repo = baseRepo
 
 			opts.TitleProvided = cmd.Flags().Changed("title")
 			opts.DescriptionProvided = cmd.Flags().Changed("description")
@@ -86,7 +84,7 @@ func newCreateCmd(f *cmdutil.Factory) *cobra.Command {
 
 func createRun(opts *createOptions) error {
 	if opts.WebMode {
-		milestonesURL := utils.GenerateRepositoryURL(opts.Host, opts.Owner, opts.Repo, "milestones/new")
+		milestonesURL := ghrepo.GenerateRepoURL(opts.Repo, "milestones/new")
 		if opts.IO.IsStdoutTTY() {
 			fmt.Fprintf(opts.IO.ErrOut, "Opening %s in your browser.\n", milestonesURL)
 		}
@@ -105,7 +103,7 @@ func createRun(opts *createOptions) error {
 
 	if opts.IO.CanPrompt() {
 		fmt.Fprintf(opts.IO.ErrOut, message,
-			cs.Bold(fmt.Sprintf("%s/%s", opts.Owner, opts.Repo)))
+			cs.Bold(fmt.Sprintf("%s/%s", opts.Repo.RepoOwner(), opts.Repo.RepoName())))
 	}
 
 	if !opts.TitleProvided {
@@ -144,7 +142,6 @@ func createRun(opts *createOptions) error {
 	opts.IO.StartProgressIndicator()
 	milestone, err := api.CreateMilestone(ctx, api.CreateMilestoneOptions{
 		IO:    opts.IO,
-		Owner: opts.Owner,
 		Repo:  opts.Repo,
 		State: state,
 	})

@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/417-72KI/gh-milestone/milestone/internal/api"
+	"github.com/417-72KI/gh-milestone/milestone/internal/ghrepo"
 	iMilestone "github.com/417-72KI/gh-milestone/milestone/internal/milestone"
 
 	"github.com/cli/cli/v2/pkg/cmdutil"
@@ -43,10 +44,7 @@ func newViewCmd(f *cmdutil.Factory) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			owner := baseRepo.RepoOwner()
-			repo := baseRepo.RepoName()
-
-			return viewRun(owner, repo, opts)
+			return viewRun(baseRepo, opts)
 		},
 	}
 	viewCmd.Flags().BoolVarP(&opts.WebMode, "web", "w", false, "List milestones in the web browser")
@@ -54,12 +52,12 @@ func newViewCmd(f *cmdutil.Factory) *cobra.Command {
 	return viewCmd
 }
 
-func viewRun(owner string, repo string, opts *viewOptions) error {
+func viewRun(repo ghrepo.Interface, opts *viewOptions) error {
 	ctx := context.Background()
 	opts.IO.DetectTerminalTheme()
 	if num, err := strconv.Atoi(opts.Selector); err == nil {
 		opts.IO.StartProgressIndicator()
-		milestone, err := api.GetMilestone(ctx, owner, repo, num)
+		milestone, err := api.GetMilestone(ctx, repo, num)
 		opts.IO.StopProgressIndicator()
 		if err != nil {
 			return err
