@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/417-72KI/gh-milestone/milestone/internal/api"
+	"github.com/417-72KI/gh-milestone/milestone/internal/browser"
 	"github.com/417-72KI/gh-milestone/milestone/internal/ghrepo"
 	iMilestone "github.com/417-72KI/gh-milestone/milestone/internal/milestone"
 
@@ -19,8 +20,8 @@ type viewOptions struct {
 	HttpClient func() (*http.Client, error)
 	IO         *iostreams.IOStreams
 
-	Exporter      cmdutil.Exporter
-	OpenInBrowser func(string) error
+	Exporter cmdutil.Exporter
+	Browser  browser.Browser
 
 	Selector string
 	WebMode  bool
@@ -28,9 +29,9 @@ type viewOptions struct {
 
 func newViewCmd(f *cmdutil.Factory) *cobra.Command {
 	opts := &viewOptions{
-		IO:            f.IOStreams,
-		HttpClient:    f.HttpClient,
-		OpenInBrowser: f.Browser.Browse,
+		IO:         f.IOStreams,
+		HttpClient: f.HttpClient,
+		Browser:    f.Browser,
 	}
 
 	viewCmd := &cobra.Command{
@@ -70,8 +71,7 @@ func viewRun(repo ghrepo.Interface, opts *viewOptions) error {
 			if opts.IO.IsStdoutTTY() {
 				fmt.Fprintf(opts.IO.ErrOut, "Opening %s in your browser.\n", milestoneURL)
 			}
-			opts.OpenInBrowser(milestoneURL)
-			return nil
+			return opts.Browser.Browse(milestoneURL)
 		}
 		if opts.Exporter != nil {
 			output := api.ConvertMilestoneToMap(milestone, opts.Exporter.Fields())

@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/417-72KI/gh-milestone/milestone/internal/api"
+	"github.com/417-72KI/gh-milestone/milestone/internal/browser"
 	"github.com/417-72KI/gh-milestone/milestone/internal/ghrepo"
 	iMilestone "github.com/417-72KI/gh-milestone/milestone/internal/milestone"
 
@@ -18,10 +19,10 @@ import (
 )
 
 type createOptions struct {
-	HttpClient    func() (*http.Client, error)
-	IO            *iostreams.IOStreams
-	OpenInBrowser func(string) error
-	Prompter      prShared.Prompt
+	HttpClient func() (*http.Client, error)
+	IO         *iostreams.IOStreams
+	Browser    browser.Browser
+	Prompter   prShared.Prompt
 
 	Repo ghrepo.Interface
 
@@ -38,10 +39,10 @@ type createOptions struct {
 
 func newCreateCmd(f *cmdutil.Factory) *cobra.Command {
 	opts := &createOptions{
-		IO:            f.IOStreams,
-		HttpClient:    f.HttpClient,
-		OpenInBrowser: f.Browser.Browse,
-		Prompter:      f.Prompter,
+		IO:         f.IOStreams,
+		HttpClient: f.HttpClient,
+		Browser:    f.Browser,
+		Prompter:   f.Prompter,
 	}
 
 	createCmd := &cobra.Command{
@@ -88,7 +89,7 @@ func createRun(opts *createOptions) error {
 		if opts.IO.IsStdoutTTY() {
 			fmt.Fprintf(opts.IO.ErrOut, "Opening %s in your browser.\n", milestonesURL)
 		}
-		return opts.OpenInBrowser(milestonesURL)
+		return opts.Browser.Browse(milestonesURL)
 	}
 
 	ctx := context.Background()
