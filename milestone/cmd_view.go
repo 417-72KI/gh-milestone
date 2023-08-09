@@ -19,6 +19,7 @@ import (
 type viewOptions struct {
 	HttpClient func() (*http.Client, error)
 	IO         *iostreams.IOStreams
+	BaseRepo   ghrepo.Interface
 
 	Exporter cmdutil.Exporter
 	Browser  browser.Browser
@@ -45,7 +46,8 @@ func newViewCmd(f *cmdutil.Factory) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			return viewRun(baseRepo, opts)
+			opts.BaseRepo = baseRepo
+			return viewRun(opts)
 		},
 	}
 	viewCmd.Flags().BoolVarP(&opts.WebMode, "web", "w", false, "List milestones in the web browser")
@@ -53,12 +55,12 @@ func newViewCmd(f *cmdutil.Factory) *cobra.Command {
 	return viewCmd
 }
 
-func viewRun(repo ghrepo.Interface, opts *viewOptions) error {
+func viewRun(opts *viewOptions) error {
 	ctx := context.Background()
 	opts.IO.DetectTerminalTheme()
 	if num, err := strconv.Atoi(opts.Selector); err == nil {
 		opts.IO.StartProgressIndicator()
-		milestone, err := api.GetMilestone(ctx, repo, num)
+		milestone, err := api.GetMilestone(ctx, opts.BaseRepo, num)
 		opts.IO.StopProgressIndicator()
 		if err != nil {
 			return err
