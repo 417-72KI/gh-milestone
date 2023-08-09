@@ -76,7 +76,7 @@ func CreateMilestone(ctx context.Context, opts CreateMilestoneOptions) (*github.
 		return nil, err
 	}
 	milestone := opts.State.ConvertToMilestone()
-	result, _, err := gh.Issues.CreateMilestone(ctx, opts.Repo.RepoName(), opts.Repo.RepoName(), &milestone)
+	result, _, err := gh.Issues.CreateMilestone(ctx, opts.Repo.RepoOwner(), opts.Repo.RepoName(), &milestone)
 	return result, err
 }
 
