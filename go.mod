@@ -3,6 +3,7 @@ module github.com/417-72KI/gh-milestone
 go 1.20
 
 require (
+	github.com/MakeNowJust/heredoc v1.0.0
 	github.com/cli/cli/v2 v2.32.1
 	github.com/cli/go-gh/v2 v2.1.0
 	github.com/google/go-github/v53 v53.2.0
@@ -12,7 +13,6 @@ require (
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.7 // indirect
-	github.com/MakeNowJust/heredoc v1.0.0 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20230717121422-5aa5874ade95 // indirect
 	github.com/alecthomas/chroma v0.10.0 // indirect
 	github.com/alessio/shellescape v1.4.2 // indirect
