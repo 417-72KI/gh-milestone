@@ -80,7 +80,7 @@ func listRun(opts *listOptions) error {
 	opts.IO.DetectTerminalTheme()
 
 	opts.IO.StartProgressIndicator()
-	listResult, err := api.Milestones(ctx, opts.BaseRepo.RepoOwner(), opts.BaseRepo.RepoName(), filterOptions)
+	listResult, err := api.Milestones(ctx, opts.BaseRepo, filterOptions)
 	opts.IO.StopProgressIndicator()
 	if err != nil {
 		return err

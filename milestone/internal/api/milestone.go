@@ -11,11 +11,12 @@ import (
 	"github.com/cli/cli/v2/pkg/iostreams"
 	"github.com/google/go-github/v53/github"
 
+	"github.com/417-72KI/gh-milestone/milestone/internal/ghrepo"
 	iMilestone "github.com/417-72KI/gh-milestone/milestone/internal/milestone"
 )
 
-func Milestones(ctx context.Context, owner string, repo string, filterOpts FilterOptions) ([]*github.Milestone, error) {
-	gh, err := ghClient(ctx)
+func Milestones(ctx context.Context, repo ghrepo.Interface, filterOpts FilterOptions) ([]*github.Milestone, error) {
+	gh, err := ghClient(ctx, WithBaseURL(ghrepo.HostWithScheme(repo)))
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +24,7 @@ func Milestones(ctx context.Context, owner string, repo string, filterOpts Filte
 		Direction: "desc",
 		State:     filterOpts.State,
 	}
-	milestones, _, err := gh.Issues.ListMilestones(ctx, owner, repo, opts)
+	milestones, _, err := gh.Issues.ListMilestones(ctx, repo.RepoOwner(), repo.RepoName(), opts)
 	return milestones, err
 }
 
