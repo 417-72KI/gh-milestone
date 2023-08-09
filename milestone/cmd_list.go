@@ -8,8 +8,9 @@ import (
 	"time"
 
 	"github.com/417-72KI/gh-milestone/milestone/internal/api"
+	"github.com/417-72KI/gh-milestone/milestone/internal/browser"
+	"github.com/417-72KI/gh-milestone/milestone/internal/ghrepo"
 	"github.com/417-72KI/gh-milestone/milestone/internal/milestone"
-	"github.com/417-72KI/gh-milestone/milestone/internal/utils"
 
 	"github.com/cli/cli/v2/pkg/cmdutil"
 	"github.com/cli/cli/v2/pkg/iostreams"
@@ -17,9 +18,10 @@ import (
 )
 
 type listOptions struct {
-	HttpClient    func() (*http.Client, error)
-	IO            *iostreams.IOStreams
-	OpenInBrowser func(string) error
+	HttpClient func() (*http.Client, error)
+	IO         *iostreams.IOStreams
+	BaseRepo   ghrepo.Interface
+	Browser    browser.Browser
 
 	State    string
 	WebMode  bool
@@ -28,9 +30,9 @@ type listOptions struct {
 
 func newListCmd(f *cmdutil.Factory) *cobra.Command {
 	opts := &listOptions{
-		HttpClient:    f.HttpClient,
-		IO:            f.IOStreams,
-		OpenInBrowser: f.Browser.Browse,
+		HttpClient: f.HttpClient,
+		IO:         f.IOStreams,
+		Browser:    f.Browser,
 	}
 
 	listCmd := &cobra.Command{
@@ -42,11 +44,8 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			host := baseRepo.RepoHost()
-			owner := baseRepo.RepoOwner()
-			repo := baseRepo.RepoName()
-
-			return listRun(host, owner, repo, opts)
+			opts.BaseRepo = baseRepo
+			return listRun(opts)
 		},
 	}
 
@@ -57,13 +56,13 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 	return listCmd
 }
 
-func listRun(host string, owner string, repo string, opts *listOptions) error {
+func listRun(opts *listOptions) error {
 	if opts.WebMode {
-		milestonesURL := utils.GenerateRepositoryURL(host, owner, repo, "milestones")
+		milestonesURL := ghrepo.GenerateRepoURL(opts.BaseRepo, "milestones")
 		if opts.IO.IsStdoutTTY() {
 			fmt.Fprintf(opts.IO.ErrOut, "Opening %s in your browser.\n", milestonesURL)
 		}
-		return opts.OpenInBrowser(milestonesURL)
+		return opts.Browser.Browse(milestonesURL)
 	}
 
 	milestoneState := strings.ToLower(opts.State)
@@ -81,7 +80,7 @@ func listRun(host string, owner string, repo string, opts *listOptions) error {
 	opts.IO.DetectTerminalTheme()
 
 	opts.IO.StartProgressIndicator()
-	listResult, err := api.Milestones(ctx, owner, repo, filterOptions)
+	listResult, err := api.Milestones(ctx, opts.BaseRepo, filterOptions)
 	opts.IO.StopProgressIndicator()
 	if err != nil {
 		return err
@@ -89,9 +88,9 @@ func listRun(host string, owner string, repo string, opts *listOptions) error {
 	if len(listResult) == 0 && opts.Exporter == nil {
 		switch opts.State {
 		case "open":
-			fmt.Fprintf(opts.IO.Out, "no open milestones in %s/%s", owner, repo)
+			fmt.Fprintf(opts.IO.Out, "no open milestones in %s/%s", opts.BaseRepo.RepoOwner(), opts.BaseRepo.RepoName())
 		default:
-			fmt.Fprintf(opts.IO.Out, "no milestones match your search in %s/%s", owner, repo)
+			fmt.Fprintf(opts.IO.Out, "no milestones match your search in %s/%s", opts.BaseRepo.RepoOwner(), opts.BaseRepo.RepoName())
 		}
 		return nil
 	}

@@ -8,6 +8,8 @@ import (
 	"strconv"
 
 	"github.com/417-72KI/gh-milestone/milestone/internal/api"
+	"github.com/417-72KI/gh-milestone/milestone/internal/ghrepo"
+
 	"github.com/google/go-github/v53/github"
 
 	"github.com/cli/cli/v2/pkg/cmdutil"
@@ -41,17 +43,15 @@ func newReopenCmd(f *cmdutil.Factory) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				owner := baseRepo.RepoOwner()
-				repo := baseRepo.RepoName()
 				opts.IO.DetectTerminalTheme()
 
 				opts.IO.StartProgressIndicator()
-				milestone, err := api.GetMilestone(ctx, owner, repo, num)
+				milestone, err := api.GetMilestone(ctx, baseRepo, num)
 				opts.IO.StopProgressIndicator()
 				if err != nil {
 					return err
 				}
-				return reopenMilestone(ctx, opts.IO, owner, repo, milestone)
+				return reopenMilestone(ctx, opts.IO, baseRepo, milestone)
 			} else if url, err := url.Parse(opts.Selector); err == nil {
 				opts.IO.DetectTerminalTheme()
 
@@ -67,7 +67,7 @@ func newReopenCmd(f *cmdutil.Factory) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				return reopenMilestone(ctx, opts.IO, *owner, *repo, milestone)
+				return reopenMilestone(ctx, opts.IO, ghrepo.NewWithHost(*owner, *repo, url.Hostname()), milestone)
 			} else {
 				return err
 			}
@@ -77,11 +77,10 @@ func newReopenCmd(f *cmdutil.Factory) *cobra.Command {
 	return reopenCmd
 }
 
-func reopenMilestone(ctx context.Context, io *iostreams.IOStreams, owner string, repo string, milestone *github.Milestone) error {
+func reopenMilestone(ctx context.Context, io *iostreams.IOStreams, repo ghrepo.Interface, milestone *github.Milestone) error {
 	io.StartProgressIndicator()
 	result, err := api.ReopenMilestone(ctx, api.ReopenMilestoneOptions{
 		IO:        io,
-		Owner:     owner,
 		Repo:      repo,
 		Milestone: milestone,
 	})

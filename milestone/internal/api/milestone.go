@@ -11,11 +11,12 @@ import (
 	"github.com/cli/cli/v2/pkg/iostreams"
 	"github.com/google/go-github/v53/github"
 
+	"github.com/417-72KI/gh-milestone/milestone/internal/ghrepo"
 	iMilestone "github.com/417-72KI/gh-milestone/milestone/internal/milestone"
 )
 
-func Milestones(ctx context.Context, owner string, repo string, filterOpts FilterOptions) ([]*github.Milestone, error) {
-	gh, err := ghClient(ctx)
+func Milestones(ctx context.Context, repo ghrepo.Interface, filterOpts FilterOptions) ([]*github.Milestone, error) {
+	gh, err := ghClient(ctx, WithBaseURL(ghrepo.HostWithScheme(repo)))
 	if err != nil {
 		return nil, err
 	}
@@ -23,17 +24,17 @@ func Milestones(ctx context.Context, owner string, repo string, filterOpts Filte
 		Direction: "desc",
 		State:     filterOpts.State,
 	}
-	milestones, _, err := gh.Issues.ListMilestones(ctx, owner, repo, opts)
+	milestones, _, err := gh.Issues.ListMilestones(ctx, repo.RepoOwner(), repo.RepoName(), opts)
 	return milestones, err
 }
 
-func GetMilestone(ctx context.Context, owner string, repo string, number int) (*github.Milestone, error) {
-	gh, err := ghClient(ctx)
+func GetMilestone(ctx context.Context, repo ghrepo.Interface, number int) (*github.Milestone, error) {
+	gh, err := ghClient(ctx, WithBaseURL(ghrepo.HostWithScheme(repo)))
 	if err != nil {
 		return nil, err
 	}
 
-	milestone, _, err := gh.Issues.GetMilestone(ctx, owner, repo, number)
+	milestone, _, err := gh.Issues.GetMilestone(ctx, repo.RepoOwner(), repo.RepoName(), number)
 	return milestone, err
 }
 
@@ -65,25 +66,23 @@ func GetMilestoneByURL(ctx context.Context, url *url.URL) (*github.Milestone, er
 
 type CreateMilestoneOptions struct {
 	IO    *iostreams.IOStreams
-	Owner string
-	Repo  string
+	Repo  ghrepo.Interface
 	State *iMilestone.MilestoneMetadataState
 }
 
 func CreateMilestone(ctx context.Context, opts CreateMilestoneOptions) (*github.Milestone, error) {
-	gh, err := ghClient(ctx)
+	gh, err := ghClient(ctx, WithBaseURL(ghrepo.HostWithScheme(opts.Repo)))
 	if err != nil {
 		return nil, err
 	}
 	milestone := opts.State.ConvertToMilestone()
-	result, _, err := gh.Issues.CreateMilestone(ctx, opts.Owner, opts.Repo, &milestone)
+	result, _, err := gh.Issues.CreateMilestone(ctx, opts.Repo.RepoName(), opts.Repo.RepoName(), &milestone)
 	return result, err
 }
 
 type CloseMilestoneOptions struct {
 	IO        *iostreams.IOStreams
-	Owner     string
-	Repo      string
+	Repo      ghrepo.Interface
 	Milestone *github.Milestone
 }
 
@@ -97,7 +96,7 @@ func CloseMilestone(ctx context.Context, opts CloseMilestoneOptions) (*github.Mi
 	}
 	number := *milestone.Number
 
-	gh, err := ghClient(ctx)
+	gh, err := ghClient(ctx, WithBaseURL(ghrepo.HostWithScheme(opts.Repo)))
 	if err != nil {
 		return nil, err
 	}
@@ -109,14 +108,13 @@ func CloseMilestone(ctx context.Context, opts CloseMilestoneOptions) (*github.Mi
 	*editedMilestone.ClosedAt = github.Timestamp{Time: time.Now()}
 	*editedMilestone.State = "closed"
 
-	result, _, err := gh.Issues.EditMilestone(ctx, opts.Owner, opts.Repo, number, editedMilestone)
+	result, _, err := gh.Issues.EditMilestone(ctx, opts.Repo.RepoOwner(), opts.Repo.RepoName(), number, editedMilestone)
 	return result, err
 }
 
 type ReopenMilestoneOptions struct {
 	IO        *iostreams.IOStreams
-	Owner     string
-	Repo      string
+	Repo      ghrepo.Interface
 	Milestone *github.Milestone
 }
 
@@ -130,7 +128,7 @@ func ReopenMilestone(ctx context.Context, opts ReopenMilestoneOptions) (*github.
 	}
 	number := *milestone.Number
 
-	gh, err := ghClient(ctx)
+	gh, err := ghClient(ctx, WithBaseURL(ghrepo.HostWithScheme(opts.Repo)))
 	if err != nil {
 		return nil, err
 	}
@@ -142,6 +140,6 @@ func ReopenMilestone(ctx context.Context, opts ReopenMilestoneOptions) (*github.
 	*editedMilestone.ClosedAt = github.Timestamp{Time: time.Now()}
 	*editedMilestone.State = "open"
 
-	result, _, err := gh.Issues.EditMilestone(ctx, opts.Owner, opts.Repo, number, editedMilestone)
+	result, _, err := gh.Issues.EditMilestone(ctx, opts.Repo.RepoOwner(), opts.Repo.RepoName(), number, editedMilestone)
 	return result, err
 }
