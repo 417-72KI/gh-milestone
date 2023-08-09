@@ -11,7 +11,6 @@ import (
 	"github.com/417-72KI/gh-milestone/milestone/internal/browser"
 	"github.com/417-72KI/gh-milestone/milestone/internal/ghrepo"
 	"github.com/417-72KI/gh-milestone/milestone/internal/milestone"
-	"github.com/417-72KI/gh-milestone/milestone/internal/utils"
 
 	"github.com/cli/cli/v2/pkg/cmdutil"
 	"github.com/cli/cli/v2/pkg/iostreams"
@@ -59,7 +58,7 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 
 func listRun(opts *listOptions) error {
 	if opts.WebMode {
-		milestonesURL := utils.GenerateRepositoryURL(opts.BaseRepo.RepoHost(), opts.BaseRepo.RepoOwner(), opts.BaseRepo.RepoName(), "milestones")
+		milestonesURL := ghrepo.GenerateRepoURL(opts.BaseRepo, "milestones")
 		if opts.IO.IsStdoutTTY() {
 			fmt.Fprintf(opts.IO.ErrOut, "Opening %s in your browser.\n", milestonesURL)
 		}
