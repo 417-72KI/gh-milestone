@@ -8,7 +8,7 @@ import (
 
 func NewRootCmd(f *cmdutil.Factory) *cobra.Command {
 	rootCmd := &cobra.Command{
-		Use:   "milestones",
+		Use:   "milestone",
 		Short: "Manage milestones.",
 		Long:  `Work with GitHub milestones.`,
 		Example: heredoc.Doc(`
