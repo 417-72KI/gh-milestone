@@ -23,4 +23,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           make install
-          gh milestone close $(gh milestone list --json title,number --jq ".[] | select(.title == \"${GITHUB_REF#refs/*/}\") | .number")
+          MILESTONE_NUMBER=$(gh milestone list --json title,number --jq ".[] | select(.title == \"${GITHUB_REF#refs/*/}\") | .number")
+          echo "Closing milestone: $MILESTONE_NUMBER"
+          gh milestone view $MILESTONE_NUMBER
+          gh milestone close $MILESTONE_NUMBER
