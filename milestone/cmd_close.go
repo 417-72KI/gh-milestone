@@ -4,11 +4,10 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"net/url"
-	"strconv"
 
 	"github.com/417-72KI/gh-milestone/milestone/internal/api"
 	"github.com/417-72KI/gh-milestone/milestone/internal/ghrepo"
+	iMilestone "github.com/417-72KI/gh-milestone/milestone/internal/milestone"
 
 	"github.com/google/go-github/v53/github"
 
@@ -20,6 +19,7 @@ import (
 type closeOptions struct {
 	HttpClient func() (*http.Client, error)
 	IO         *iostreams.IOStreams
+	BaseRepo   ghrepo.Interface
 
 	Selector string
 }
@@ -37,45 +37,41 @@ func newCloseCmd(f *cmdutil.Factory) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			opts.Selector = args[0]
 
-			ctx := context.Background()
-			if num, err := strconv.Atoi(opts.Selector); err == nil {
-				baseRepo, err := f.BaseRepo()
-				if err != nil {
-					return err
-				}
-				opts.IO.DetectTerminalTheme()
-
-				opts.IO.StartProgressIndicator()
-				milestone, err := api.GetMilestone(ctx, baseRepo, num)
-				opts.IO.StopProgressIndicator()
-				if err != nil {
-					return err
-				}
-
-				return closeMilestone(ctx, opts.IO, baseRepo, milestone)
-			} else if url, err := url.Parse(opts.Selector); err == nil {
-				opts.IO.DetectTerminalTheme()
-
-				opts.IO.StartProgressIndicator()
-				milestone, err := api.GetMilestoneByURL(ctx, url)
-				opts.IO.StopProgressIndicator()
-				if err != nil {
-					return err
-				}
-				opts.IO.StartProgressIndicator()
-				owner, repo, err := api.FetchOwnerAndRepoFromURL(url)
-				opts.IO.StopProgressIndicator()
-				if err != nil {
-					return err
-				}
-				return closeMilestone(ctx, opts.IO, ghrepo.NewWithHost(*owner, *repo, url.Hostname()), milestone)
-			} else {
+			baseRepo, err := f.BaseRepo()
+			if err != nil {
 				return err
 			}
+			opts.BaseRepo = baseRepo
+
+			return closeRun(opts)
 		},
 	}
 
 	return closeCmd
+}
+
+func closeRun(opts *closeOptions) error {
+	ctx := context.Background()
+	opts.IO.DetectTerminalTheme()
+
+	opts.IO.StartProgressIndicator()
+	num, repo, err := iMilestone.MilestoneNumberAndRepoFromArg(opts.Selector)
+	opts.IO.StopProgressIndicator()
+	if err != nil {
+		return err
+	}
+	if repo != nil {
+		opts.BaseRepo = repo
+	}
+
+	opts.IO.StartProgressIndicator()
+	milestone, err := api.GetMilestone(ctx, opts.BaseRepo, num)
+	opts.IO.StopProgressIndicator()
+	if err != nil {
+		return err
+	}
+
+	return closeMilestone(ctx, opts.IO, opts.BaseRepo, milestone)
 }
 
 func closeMilestone(ctx context.Context, io *iostreams.IOStreams, repo ghrepo.Interface, milestone *github.Milestone) error {
