@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/417-72KI/gh-milestone/milestone/internal/api"
 	"github.com/417-72KI/gh-milestone/milestone/internal/browser"
@@ -19,6 +18,7 @@ import (
 type viewOptions struct {
 	HttpClient func() (*http.Client, error)
 	IO         *iostreams.IOStreams
+	BaseRepo   ghrepo.Interface
 
 	Exporter cmdutil.Exporter
 	Browser  browser.Browser
@@ -35,7 +35,7 @@ func newViewCmd(f *cmdutil.Factory) *cobra.Command {
 	}
 
 	viewCmd := &cobra.Command{
-		Use:   "view <number> [flags]",
+		Use:   "view {<number> | <url>} [flags]",
 		Short: "Display the information about a milestone",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -45,7 +45,8 @@ func newViewCmd(f *cmdutil.Factory) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			return viewRun(baseRepo, opts)
+			opts.BaseRepo = baseRepo
+			return viewRun(opts)
 		},
 	}
 	viewCmd.Flags().BoolVarP(&opts.WebMode, "web", "w", false, "List milestones in the web browser")
@@ -53,35 +54,42 @@ func newViewCmd(f *cmdutil.Factory) *cobra.Command {
 	return viewCmd
 }
 
-func viewRun(repo ghrepo.Interface, opts *viewOptions) error {
+func viewRun(opts *viewOptions) error {
 	ctx := context.Background()
 	opts.IO.DetectTerminalTheme()
-	if num, err := strconv.Atoi(opts.Selector); err == nil {
-		opts.IO.StartProgressIndicator()
-		milestone, err := api.GetMilestone(ctx, repo, num)
-		opts.IO.StopProgressIndicator()
+
+	opts.IO.StartProgressIndicator()
+	num, repo, err := iMilestone.MilestoneNumberAndRepoFromArg(opts.Selector)
+	opts.IO.StopProgressIndicator()
+	if err != nil {
+		return err
+	}
+	if repo != nil {
+		opts.BaseRepo = repo
+	}
+
+	opts.IO.StartProgressIndicator()
+	milestone, err := api.GetMilestone(ctx, opts.BaseRepo, num)
+	opts.IO.StopProgressIndicator()
+	if err != nil {
+		return err
+	}
+	if opts.WebMode {
+		milestoneURL := *milestone.HTMLURL
 		if err != nil {
 			return err
 		}
-		if opts.WebMode {
-			milestoneURL := *milestone.HTMLURL
-			if err != nil {
-				return err
-			}
-			if opts.IO.IsStdoutTTY() {
-				fmt.Fprintf(opts.IO.ErrOut, "Opening %s in your browser.\n", milestoneURL)
-			}
-			return opts.Browser.Browse(milestoneURL)
-		}
-		if opts.Exporter != nil {
-			output := api.ConvertMilestoneToMap(milestone, opts.Exporter.Fields())
-			return opts.Exporter.Write(opts.IO, output)
-		}
 		if opts.IO.IsStdoutTTY() {
-			return iMilestone.PrintReadableMilestonePreview(opts.IO, milestone)
+			fmt.Fprintf(opts.IO.ErrOut, "Opening %s in your browser.\n", milestoneURL)
 		}
-		return iMilestone.PrintRawMilestonePreview(opts.IO.Out, milestone)
-	} else {
-		return err
+		return opts.Browser.Browse(milestoneURL)
 	}
+	if opts.Exporter != nil {
+		output := api.ConvertMilestoneToMap(milestone, opts.Exporter.Fields())
+		return opts.Exporter.Write(opts.IO, output)
+	}
+	if opts.IO.IsStdoutTTY() {
+		return iMilestone.PrintReadableMilestonePreview(opts.IO, milestone)
+	}
+	return iMilestone.PrintRawMilestonePreview(opts.IO.Out, milestone)
 }
