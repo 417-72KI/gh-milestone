@@ -18,12 +18,13 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Close milestone
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          make install
-          MILESTONE_NUMBER=$(gh milestone list --json title,number --jq ".[] | select(.title == \"${GITHUB_REF#refs/*/}\") | .number")
-          echo "Closing milestone: $MILESTONE_NUMBER"
-          gh milestone view $MILESTONE_NUMBER
-          gh milestone close $MILESTONE_NUMBER
+      # FIXME: `403 Resource not accessible by integration []`
+      # - name: Close milestone
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     make install
+      #     MILESTONE_NUMBER=$(gh milestone list --json title,number --jq ".[] | select(.title == \"${GITHUB_REF#refs/*/}\") | .number")
+      #     echo "Closing milestone: $MILESTONE_NUMBER"
+      #     gh milestone view $MILESTONE_NUMBER
+      #     gh milestone close $MILESTONE_NUMBER
