@@ -1,11 +1,13 @@
 module github.com/417-72KI/gh-milestone
 
-go 1.20
+go 1.21
+
+toolchain go1.21.0
 
 require (
 	github.com/MakeNowJust/heredoc v1.0.0
-	github.com/cli/cli/v2 v2.32.1
-	github.com/cli/go-gh/v2 v2.1.0
+	github.com/cli/cli/v2 v2.34.0
+	github.com/cli/go-gh/v2 v2.3.0
 	github.com/google/go-github/v53 v53.2.0
 	github.com/spf13/cobra v1.7.0
 	golang.org/x/oauth2 v0.11.0
