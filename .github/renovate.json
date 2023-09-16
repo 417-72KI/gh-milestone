@@ -10,5 +10,10 @@
   "automerge": true,
   "major": {
     "automerge": false
+  },
+  "github-actions": {
+    "major": {
+      "automerge": true
+    }
   }
 }
