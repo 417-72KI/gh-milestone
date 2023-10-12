@@ -7,7 +7,7 @@ toolchain go1.21.0
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
 	github.com/cli/cli/v2 v2.36.0
-	github.com/cli/go-gh/v2 v2.3.0
+	github.com/cli/go-gh/v2 v2.4.0
 	github.com/google/go-github/v55 v55.0.0
 	github.com/spf13/cobra v1.7.0
 	golang.org/x/oauth2 v0.13.0
@@ -23,9 +23,9 @@ require (
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/briandowns/spinner v1.23.0 // indirect
 	github.com/charmbracelet/glamour v0.6.0 // indirect
-	github.com/cli/browser v1.2.0 // indirect
+	github.com/cli/browser v1.3.0 // indirect
 	github.com/cli/safeexec v1.0.1 // indirect
-	github.com/cli/shurcooL-graphql v0.0.3 // indirect
+	github.com/cli/shurcooL-graphql v0.0.4 // indirect
 	github.com/cloudflare/circl v1.3.3 // indirect
 	github.com/danieljoos/wincred v1.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -50,7 +50,7 @@ require (
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
-	github.com/microcosm-cc/bluemonday v1.0.25 // indirect
+	github.com/microcosm-cc/bluemonday v1.0.26 // indirect
 	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/muesli/termenv v0.15.2 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
@@ -67,7 +67,7 @@ require (
 	github.com/yuin/goldmark-emoji v1.0.2 // indirect
 	github.com/zalando/go-keyring v0.2.3 // indirect
 	golang.org/x/crypto v0.14.0 // indirect
-	golang.org/x/net v0.16.0 // indirect
+	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/term v0.13.0 // indirect
