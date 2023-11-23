@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/417-72KI/gh-milestone/milestone/internal/utils"
 	"github.com/cli/cli/v2/pkg/iostreams"
 	"github.com/cli/cli/v2/pkg/markdown"
-	"github.com/cli/cli/v2/utils"
 	"github.com/cli/go-gh/v2/pkg/text"
 	"github.com/google/go-github/v56/github"
 )
