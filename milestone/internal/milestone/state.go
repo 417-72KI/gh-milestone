@@ -3,7 +3,7 @@ package milestone
 import (
 	"time"
 
-	"github.com/google/go-github/v56/github"
+	"github.com/google/go-github/v57/github"
 )
 
 type MilestoneMetadataState struct {
