@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/google/go-github/v57/github"
+	"github.com/google/go-github/v59/github"
 )
 
 var MilestoneFields = []string{
