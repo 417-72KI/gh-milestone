@@ -9,6 +9,7 @@ require (
 	github.com/cli/cli/v2 v2.46.0
 	github.com/cli/go-gh/v2 v2.6.0
 	github.com/google/go-github/v59 v59.0.0
+	github.com/google/go-github/v60 v60.0.0
 	github.com/spf13/cobra v1.8.0
 	golang.org/x/oauth2 v0.18.0
 )
