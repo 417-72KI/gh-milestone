@@ -1,13 +1,13 @@
 module github.com/417-72KI/gh-milestone
 
-go 1.21
+go 1.22
 
-toolchain go1.21.0
+toolchain go1.22.2
 
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
-	github.com/cli/cli/v2 v2.46.0
-	github.com/cli/go-gh/v2 v2.7.0
+	github.com/cli/cli/v2 v2.47.0
+	github.com/cli/go-gh/v2 v2.8.0
 	github.com/google/go-github/v59 v59.0.0
 	github.com/spf13/cobra v1.8.0
 	golang.org/x/oauth2 v0.18.0
@@ -16,17 +16,17 @@ require (
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.7 // indirect
 	github.com/MakeNowJust/heredoc v1.0.0 // indirect
-	github.com/alecthomas/chroma v0.10.0 // indirect
+	github.com/alecthomas/chroma/v2 v2.8.0 // indirect
 	github.com/alessio/shellescape v1.4.2 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/briandowns/spinner v1.23.0 // indirect
-	github.com/charmbracelet/glamour v0.6.0 // indirect
+	github.com/charmbracelet/glamour v0.7.0 // indirect
 	github.com/cli/browser v1.3.0 // indirect
 	github.com/cli/safeexec v1.0.1 // indirect
 	github.com/cli/shurcooL-graphql v0.0.4 // indirect
 	github.com/danieljoos/wincred v1.2.1 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dlclark/regexp2 v1.10.0 // indirect
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/gdamore/encoding v1.0.0 // indirect
@@ -39,7 +39,7 @@ require (
 	github.com/henvic/httpretty v0.1.3 // indirect
 	github.com/hinshun/vt10x v0.0.0-20220301184237-5011da428d02 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/itchyny/gojq v0.12.13 // indirect
+	github.com/itchyny/gojq v0.12.15 // indirect
 	github.com/itchyny/timefmt-go v0.1.5 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
@@ -52,9 +52,9 @@ require (
 	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/muesli/termenv v0.15.2 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rivo/tview v0.0.0-20230621164836-6cc0565babaf // indirect
-	github.com/rivo/uniseg v0.4.4 // indirect
+	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/shurcooL/githubv4 v0.0.0-20230704064427-599ae7bbf278 // indirect
 	github.com/shurcooL/graphql v0.0.0-20230722043721-ed46e5a46466 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
@@ -65,7 +65,7 @@ require (
 	github.com/yuin/goldmark-emoji v1.0.2 // indirect
 	github.com/zalando/go-keyring v0.2.4 // indirect
 	golang.org/x/net v0.22.0 // indirect
-	golang.org/x/sync v0.3.0 // indirect
+	golang.org/x/sync v0.6.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/term v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
