@@ -10,7 +10,7 @@ require (
 	github.com/cli/go-gh/v2 v2.9.0
 	github.com/google/go-github/v59 v59.0.0
 	github.com/spf13/cobra v1.8.0
-	golang.org/x/oauth2 v0.20.0
+	golang.org/x/oauth2 v0.21.0
 )
 
 require (
