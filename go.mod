@@ -6,7 +6,7 @@ toolchain go1.22.4
 
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
-	github.com/cli/cli/v2 v2.50.0
+	github.com/cli/cli/v2 v2.51.0
 	github.com/cli/go-gh/v2 v2.9.0
 	github.com/google/go-github/v59 v59.0.0
 	github.com/spf13/cobra v1.8.0
@@ -64,7 +64,7 @@ require (
 	github.com/thlib/go-timezone-local v0.0.0-20210907160436-ef149e42d28e // indirect
 	github.com/yuin/goldmark v1.5.5 // indirect
 	github.com/yuin/goldmark-emoji v1.0.2 // indirect
-	github.com/zalando/go-keyring v0.2.4 // indirect
+	github.com/zalando/go-keyring v0.2.5 // indirect
 	golang.org/x/net v0.25.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
