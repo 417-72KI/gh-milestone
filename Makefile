@@ -13,5 +13,5 @@ build:
 install: build
 	gh extension install .
 
-release: build
+release: install
 	gh release create $(shell gh milestone list --json title --jq '.[].title' | peco)
