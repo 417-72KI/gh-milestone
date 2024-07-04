@@ -76,9 +76,6 @@ func viewRun(opts *viewOptions) error {
 	}
 	if opts.WebMode {
 		milestoneURL := *milestone.HTMLURL
-		if err != nil {
-			return err
-		}
 		if opts.IO.IsStdoutTTY() {
 			fmt.Fprintf(opts.IO.ErrOut, "Opening %s in your browser.\n", milestoneURL)
 		}
