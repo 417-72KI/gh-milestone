@@ -1,12 +1,12 @@
 module github.com/417-72KI/gh-milestone
 
-go 1.22.0
+go 1.22.5
 
 toolchain go1.23.1
 
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
-	github.com/cli/cli/v2 v2.55.0
+	github.com/cli/cli/v2 v2.56.0
 	github.com/cli/go-gh/v2 v2.9.0
 	github.com/google/go-github/v63 v63.0.0
 	github.com/spf13/cobra v1.8.1
@@ -66,9 +66,9 @@ require (
 	github.com/yuin/goldmark-emoji v1.0.2 // indirect
 	github.com/zalando/go-keyring v0.2.5 // indirect
 	golang.org/x/net v0.27.0 // indirect
-	golang.org/x/sync v0.7.0 // indirect
-	golang.org/x/sys v0.22.0 // indirect
-	golang.org/x/term v0.22.0 // indirect
-	golang.org/x/text v0.16.0 // indirect
+	golang.org/x/sync v0.8.0 // indirect
+	golang.org/x/sys v0.23.0 // indirect
+	golang.org/x/term v0.23.0 // indirect
+	golang.org/x/text v0.17.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
