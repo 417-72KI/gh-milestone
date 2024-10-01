@@ -6,7 +6,7 @@ toolchain go1.23.2
 
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
-	github.com/cli/cli/v2 v2.57.0
+	github.com/cli/cli/v2 v2.58.0
 	github.com/cli/go-gh/v2 v2.10.0
 	github.com/google/go-github/v63 v63.0.0
 	github.com/spf13/cobra v1.8.1
@@ -37,7 +37,7 @@ require (
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
-	github.com/henvic/httpretty v0.1.3 // indirect
+	github.com/henvic/httpretty v0.1.4 // indirect
 	github.com/hinshun/vt10x v0.0.0-20220301184237-5011da428d02 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/itchyny/gojq v0.12.15 // indirect
