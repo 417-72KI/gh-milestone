@@ -2,7 +2,7 @@ module github.com/417-72KI/gh-milestone
 
 go 1.22.5
 
-toolchain go1.23.1
+toolchain go1.23.2
 
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
