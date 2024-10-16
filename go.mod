@@ -6,7 +6,7 @@ toolchain go1.23.2
 
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
-	github.com/cli/cli/v2 v2.58.0
+	github.com/cli/cli/v2 v2.59.0
 	github.com/cli/go-gh/v2 v2.11.0
 	github.com/google/go-github/v63 v63.0.0
 	github.com/spf13/cobra v1.8.1
@@ -67,7 +67,7 @@ require (
 	github.com/zalando/go-keyring v0.2.5 // indirect
 	golang.org/x/net v0.27.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/sys v0.25.0 // indirect
+	golang.org/x/sys v0.26.0 // indirect
 	golang.org/x/term v0.24.0 // indirect
 	golang.org/x/text v0.18.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
