@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/google/go-github/v63/github"
+	"github.com/google/go-github/v66/github"
 	"golang.org/x/oauth2"
 )
 
