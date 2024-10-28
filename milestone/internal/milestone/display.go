@@ -12,7 +12,7 @@ import (
 	"github.com/cli/cli/v2/pkg/iostreams"
 	"github.com/cli/cli/v2/pkg/markdown"
 	"github.com/cli/go-gh/v2/pkg/text"
-	"github.com/google/go-github/v63/github"
+	"github.com/google/go-github/v66/github"
 )
 
 var whitespaceRE = regexp.MustCompile(`\s+`)
