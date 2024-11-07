@@ -28,8 +28,8 @@ github.com/charmbracelet/x/exp/term v0.0.0-20240425164147-ba2a9512b05f h1:1BXkZq
 github.com/charmbracelet/x/exp/term v0.0.0-20240425164147-ba2a9512b05f/go.mod h1:yQqGHmheaQfkqiJWjklPHVAq1dKbk8uGbcoS/lcKCJ0=
 github.com/cli/browser v1.3.0 h1:LejqCrpWr+1pRqmEPDGnTZOjsMe7sehifLynZJuqJpo=
 github.com/cli/browser v1.3.0/go.mod h1:HH8s+fOAxjhQoBUAsKuPCbqUuxZDhQ2/aD+SzsEfBTk=
-github.com/cli/cli/v2 v2.60.1 h1:P6u07i8XWgMv1tg5ezviEyUDDRvW2jVxb/JQQXnD6wI=
-github.com/cli/cli/v2 v2.60.1/go.mod h1:6Cl3o+OKmwaMxJqyZRMEFaPoWqlNK5UNwUuQUvYk6YE=
+github.com/cli/cli/v2 v2.61.0 h1:mI+vW04JsUVl6ZxEt2IK9UHrVfpbAWaj1XjAHFrjSh0=
+github.com/cli/cli/v2 v2.61.0/go.mod h1:lFlAu9/wJZJFfPbpKYB1YK8L3HmaXF87NNk2mLRRFvs=
 github.com/cli/go-gh/v2 v2.11.0 h1:TERLYMMWderKBO3lBff/JIu2+eSly2oFRgN2WvO+3eA=
 github.com/cli/go-gh/v2 v2.11.0/go.mod h1:MeRoKzXff3ygHu7zP+NVTT+imcHW6p3tpuxHAzRM2xE=
 github.com/cli/safeexec v1.0.1 h1:e/C79PbXF4yYTN/wauC4tviMxEV13BwljGj0N9j+N00=
@@ -39,8 +39,8 @@ github.com/cli/shurcooL-graphql v0.0.4/go.mod h1:3waN4u02FiZivIV+p1y4d0Jo1jc6BVi
 github.com/cpuguy83/go-md2man/v2 v2.0.4/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/creack/pty v1.1.17/go.mod h1:MOBLtS5ELjhRRrroQr9kyvTxUAFNvYEK993ew/Vr4O4=
-github.com/creack/pty v1.1.23 h1:4M6+isWdcStXEf15G/RbrMPOQj1dZ7HPZCGwE4kOeP0=
-github.com/creack/pty v1.1.23/go.mod h1:08sCNb52WyoAwi2QDyzUCTgcvVFhUzewun7wtTfvcwE=
+github.com/creack/pty v1.1.24 h1:bJrF4RRfyJnbTJqzRLHzcGaZK1NeM5kTC9jGgovnR1s=
+github.com/creack/pty v1.1.24/go.mod h1:08sCNb52WyoAwi2QDyzUCTgcvVFhUzewun7wtTfvcwE=
 github.com/danieljoos/wincred v1.2.1 h1:dl9cBrupW8+r5250DYkYxocLeZ1Y4vB1kxgtjxw8GQs=
 github.com/danieljoos/wincred v1.2.1/go.mod h1:uGaFL9fDn3OLTvzCGulzE+SzjEe5NGlh5FdCcyfPwps=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
