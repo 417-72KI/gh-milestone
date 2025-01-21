@@ -17,4 +17,4 @@ archives:
   - name_template: '{{ .Os }}-{{ .Arch }}'
     format: binary
 changelog:
-  skip: true
+  disable: true
