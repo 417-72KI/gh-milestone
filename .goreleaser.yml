@@ -1,3 +1,4 @@
+version: 2
 before:
   hooks:
     - go mod tidy
@@ -16,4 +17,4 @@ archives:
   - name_template: '{{ .Os }}-{{ .Arch }}'
     format: binary
 changelog:
-  skip: true
+  disable: true
