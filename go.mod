@@ -6,7 +6,7 @@ toolchain go1.24.1
 
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
-	github.com/cli/cli/v2 v2.67.0
+	github.com/cli/cli/v2 v2.68.0
 	github.com/cli/go-gh/v2 v2.11.2
 	github.com/google/go-github/v68 v68.0.0
 	github.com/spf13/cobra v1.9.1
