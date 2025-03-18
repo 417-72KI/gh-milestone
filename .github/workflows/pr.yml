@@ -26,7 +26,7 @@ jobs:
         name: Fetch Diff
         run: echo result=$(gh pr view ${{ github.event.number }} --json files --jq '.files | map(.path)' | jq -rc .) >> $GITHUB_OUTPUT
       - if: ${{ contains(fromJSON(steps.diff.outputs.result), '.goreleaser.yml') }}
-        uses: goreleaser/goreleaser-action@90a3faa9d0182683851fbfa97ca1a2cb983bfca3 # v6
+        uses: goreleaser/goreleaser-action@v6
         with:
           install-only: true
       - if: ${{ contains(fromJSON(steps.diff.outputs.result), '.goreleaser.yml') }}
