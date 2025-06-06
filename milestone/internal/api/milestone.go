@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/cli/cli/v2/pkg/iostreams"
-	"github.com/google/go-github/v70/github"
+	"github.com/google/go-github/v72/github"
 
 	"github.com/417-72KI/gh-milestone/milestone/internal/ghrepo"
 	iMilestone "github.com/417-72KI/gh-milestone/milestone/internal/milestone"
