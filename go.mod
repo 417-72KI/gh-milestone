@@ -6,7 +6,7 @@ toolchain go1.25.1
 
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
-	github.com/cli/cli/v2 v2.78.0
+	github.com/cli/cli/v2 v2.79.0
 	github.com/cli/go-gh/v2 v2.12.2
 	github.com/google/go-github/v72 v72.0.0
 	github.com/spf13/cobra v1.10.1
@@ -85,7 +85,7 @@ require (
 	github.com/spf13/cast v1.9.2 // indirect
 	github.com/spf13/pflag v1.0.9 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
-	github.com/stretchr/testify v1.10.0 // indirect
+	github.com/stretchr/testify v1.11.0 // indirect
 	github.com/thlib/go-timezone-local v0.0.6 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	github.com/yuin/goldmark v1.7.13 // indirect
