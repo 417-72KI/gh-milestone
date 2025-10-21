@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/cli/go-gh/v2"
 	"github.com/google/go-github/v76/github"
 	"golang.org/x/oauth2"
 )
@@ -46,7 +47,10 @@ func ghClient(ctx context.Context, ops ...clientOption) (*github.Client, error) 
 	for _, op := range ops {
 		op(&opts)
 	}
-	token := os.Getenv("GITHUB_TOKEN")
+	token, err := ghToken()
+	if err != nil {
+		return nil, err
+	}
 	if opts.token != "" {
 		token = opts.token
 	}
@@ -68,4 +72,14 @@ func ghClient(ctx context.Context, ops ...clientOption) (*github.Client, error) 
 		}
 	}
 	return client, nil
+}
+
+func ghToken() (string, error) {
+	args := []string{"auth", "token"}
+	stdOut, _, err := gh.Exec(args...)
+	if err != nil {
+		return "", err
+	}
+
+	return strings.TrimSuffix(stdOut.String(), "\n"), nil
 }
