@@ -45,7 +45,7 @@ func ghVersion() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to view repo: %w", err)
 	}
-	viewOut := strings.Split(stdOut.String(), "\n")[0]
+	viewOut := strings.TrimSuffix(stdOut.String(), "\n")
 	semver := semverRE.FindStringSubmatch(viewOut)[0]
 
 	return semver, nil
