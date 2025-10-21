@@ -8,7 +8,6 @@ require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
 	github.com/cli/cli/v2 v2.82.0
 	github.com/cli/go-gh/v2 v2.12.2
-	github.com/google/go-github/v72 v72.0.0
 	github.com/google/go-github/v76 v76.0.0
 	github.com/spf13/cobra v1.10.1
 	golang.org/x/oauth2 v0.32.0
