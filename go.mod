@@ -1,12 +1,12 @@
 module github.com/417-72KI/gh-milestone
 
-go 1.25.0
+go 1.25.7
 
 toolchain go1.26.0
 
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
-	github.com/cli/cli/v2 v2.86.0
+	github.com/cli/cli/v2 v2.87.0
 	github.com/cli/go-gh/v2 v2.13.0
 	github.com/google/go-github/v76 v76.0.0
 	github.com/spf13/cobra v1.10.2
@@ -48,7 +48,7 @@ require (
 	github.com/erikgeiser/coninput v0.0.0-20211004153227-1c3628e74d0f // indirect
 	github.com/fatih/color v1.18.0 // indirect
 	github.com/gdamore/encoding v1.0.1 // indirect
-	github.com/gdamore/tcell/v2 v2.13.4 // indirect
+	github.com/gdamore/tcell/v2 v2.13.8 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
@@ -91,11 +91,11 @@ require (
 	github.com/yuin/goldmark v1.7.16 // indirect
 	github.com/yuin/goldmark-emoji v1.0.6 // indirect
 	github.com/zalando/go-keyring v0.2.6 // indirect
-	golang.org/x/crypto v0.46.0 // indirect
-	golang.org/x/net v0.47.0 // indirect
+	golang.org/x/crypto v0.47.0 // indirect
+	golang.org/x/net v0.48.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
-	golang.org/x/sys v0.39.0 // indirect
-	golang.org/x/term v0.38.0 // indirect
-	golang.org/x/text v0.32.0 // indirect
+	golang.org/x/sys v0.40.0 // indirect
+	golang.org/x/term v0.39.0 // indirect
+	golang.org/x/text v0.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
