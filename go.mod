@@ -9,6 +9,7 @@ require (
 	github.com/cli/cli/v2 v2.87.2
 	github.com/cli/go-gh/v2 v2.13.0
 	github.com/google/go-github/v76 v76.0.0
+	github.com/google/go-github/v82 v82.0.0
 	github.com/spf13/cobra v1.10.2
 	golang.org/x/oauth2 v0.35.0
 )
@@ -50,7 +51,7 @@ require (
 	github.com/gdamore/encoding v1.0.1 // indirect
 	github.com/gdamore/tcell/v2 v2.13.8 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
-	github.com/google/go-querystring v1.1.0 // indirect
+	github.com/google/go-querystring v1.2.0 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
