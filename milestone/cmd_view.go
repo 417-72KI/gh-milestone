@@ -31,7 +31,7 @@ func newViewCmd(f *cmdutil.Factory) *cobra.Command {
 	opts := &viewOptions{
 		IO:         f.IOStreams,
 		HttpClient: f.HttpClient,
-		Browser:    f.Browser,
+		Browser:    browser.New("", f.IOStreams.Out, f.IOStreams.ErrOut),
 	}
 
 	viewCmd := &cobra.Command{

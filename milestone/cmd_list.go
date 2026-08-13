@@ -32,7 +32,7 @@ func newListCmd(f *cmdutil.Factory) *cobra.Command {
 	opts := &listOptions{
 		HttpClient: f.HttpClient,
 		IO:         f.IOStreams,
-		Browser:    f.Browser,
+		Browser:    browser.New("", f.IOStreams.Out, f.IOStreams.ErrOut),
 	}
 
 	listCmd := &cobra.Command{
