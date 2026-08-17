@@ -43,11 +43,13 @@ func (p *Prompter) Confirm(prompt string, defaultValue bool) (bool, error) {
 // MarkdownEditor prompts the user to edit markdown in an editor.
 // If blankAllowed is true, the user can skip editing and an empty string will be returned.
 func (p *Prompter) MarkdownEditor(prompt string, defaultValue string, blankAllowed bool) (string, error) {
+	if !blankAllowed {
+		return surveyext.Edit(p.editorCmd, "*.md", defaultValue, p.stdin, p.stdout, p.stderr)
+	}
+
 	options := []string{
 		"Launch " + surveyext.EditorName(p.editorCmd),
-	}
-	if blankAllowed {
-		options = append(options, "Skip")
+		"Skip",
 	}
 
 	idx, err := p.gh.Select(prompt, "", options)
@@ -55,8 +57,8 @@ func (p *Prompter) MarkdownEditor(prompt string, defaultValue string, blankAllow
 		return "", err
 	}
 
-	// If "Skip" was selected (only if blankAllowed), return empty string.
-	if blankAllowed && idx == 1 {
+	// If "Skip" was selected, return empty string.
+	if idx == 1 {
 		return "", nil
 	}
 
