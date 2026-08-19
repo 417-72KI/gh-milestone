@@ -9,10 +9,10 @@ import (
 	"github.com/417-72KI/gh-milestone/milestone/internal/browser"
 	"github.com/417-72KI/gh-milestone/milestone/internal/ghrepo"
 	iMilestone "github.com/417-72KI/gh-milestone/milestone/internal/milestone"
+	"github.com/417-72KI/gh-milestone/milestone/internal/prompter"
 
 	"github.com/MakeNowJust/heredoc/v2"
 
-	prShared "github.com/cli/cli/v2/pkg/cmd/pr/shared"
 	"github.com/cli/cli/v2/pkg/cmdutil"
 	"github.com/cli/cli/v2/pkg/iostreams"
 	"github.com/spf13/cobra"
@@ -22,7 +22,7 @@ type createOptions struct {
 	HttpClient func() (*http.Client, error)
 	IO         *iostreams.IOStreams
 	Browser    browser.Browser
-	Prompter   prShared.Prompt
+	Prompter   iMilestone.Prompt
 
 	Repo ghrepo.Interface
 
@@ -41,8 +41,8 @@ func newCreateCmd(f *cmdutil.Factory) *cobra.Command {
 	opts := &createOptions{
 		IO:         f.IOStreams,
 		HttpClient: f.HttpClient,
-		Browser:    f.Browser,
-		Prompter:   f.Prompter,
+		Browser:    browser.New("", f.IOStreams.Out, f.IOStreams.ErrOut),
+		Prompter:   prompter.New("", f.IOStreams.In, f.IOStreams.Out, f.IOStreams.ErrOut),
 	}
 
 	createCmd := &cobra.Command{
