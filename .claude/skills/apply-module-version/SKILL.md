@@ -35,6 +35,11 @@ OLD=github.com/google/go-github/v85   # example
 NEW=github.com/google/go-github/v90   # example
 ```
 
+`$OLD` may have no version suffix at all — Go modules only add `/vN` to the import path
+starting at v2 (see https://go.dev/blog/v2-go-modules), so a v0/v1 → v2 bump looks like
+`OLD=github.com/foo/bar` / `NEW=github.com/foo/bar/v2`. This matters for the boundary
+rule in step 2: when `$OLD` has no suffix, it is a literal string prefix of `$NEW`.
+
 ### 2. Replace the imports
 
 List the affected files:
@@ -56,8 +61,18 @@ imported only at the root (`github.com/MakeNowJust/heredoc/v2`), some both ways
 Handling only the subpackage form leaves the old major imported, so `go mod tidy` keeps it
 in `go.mod` — exactly the state this skill exists to remove.
 
-Match `$OLD` only where the next character is `/` or `"`. A bare substring replace would
-let a shorter major eat a longer one (`.../v2` would corrupt `.../v20/pkg`).
+Match `$OLD` only where the next character is `/` or `"` — that alone stops a shorter
+major from eating a longer one (`.../v2` would otherwise corrupt `.../v20/pkg`).
+
+If `$OLD` has no version suffix (the v0/v1 case above), add one more condition: the `/`
+must **not** be followed by `v` + digits. Without it, `$OLD` matches its own already-migrated
+form — `github.com/foo/bar` is a literal prefix of `github.com/foo/bar/v2/subpkg` — and
+rewriting that occurrence corrupts it into `github.com/foo/bar/v2/v2/subpkg`. Verify matches
+before editing:
+
+```sh
+rg -Pl "\Q$OLD\E(?!/v[0-9])(/|\")" --glob '*.go'
+```
 
 Use the Edit tool (`sed -i` needs `sed -i ''` on macOS and is incompatible with GNU sed).
 
@@ -120,9 +135,16 @@ from step 4 are picked up automatically alongside the import replacements.
 - `git status --short` shows no uncommitted changes
 
 ```sh
-rg "$OLD" go.mod || echo 'OK: no old major in go.mod'
-rg "$OLD" --glob '*.go' || echo 'OK: no old major in imports'
+go mod edit -json | jq -e --arg old "$OLD" '.Require[] | select(.Path == $old)' \
+  && echo 'FAIL: old major still in go.mod' || echo 'OK: no old major in go.mod'
+rg -Pl "\Q$OLD\E(?!/v[0-9])(/|\")" --glob '*.go' \
+  && echo 'FAIL: old major still imported' || echo 'OK: no old major in imports'
 go build ./... && go vet ./... && echo 'OK: build/vet passed'
 make build && ./gh-milestone list && echo 'OK: runtime check passed'
 git status --short
 ```
+
+Plain `rg "$OLD" go.mod` / `rg "$OLD" --glob '*.go'` would false-positive whenever `$OLD`
+has no version suffix, since `$OLD` is then a literal prefix of `$NEW` and matches every
+correctly-migrated line too. The `jq` check matches the exact `go.mod` require path instead
+of a substring, and the `.go` check reuses the same negative-lookahead rule from step 2.
