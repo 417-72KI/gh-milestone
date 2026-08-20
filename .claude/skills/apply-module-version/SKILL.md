@@ -56,9 +56,14 @@ in `go.mod` — exactly the state this skill exists to remove.
 
 List the affected files with the same rule the replacement must follow: match `$OLD` only
 where the next character is `/` or `"`, and where that `/` is not followed by `v` + digits.
-Both conditions always apply:
+Both conditions always apply. This needs ripgrep built with PCRE2 (`rg -P`) — check before
+relying on it, and self-heal via this repo's `Brewfile` (which declares `ripgrep`, whose
+Homebrew formula bundles PCRE2 at build time) if it's missing:
 
 ```sh
+rg --pcre2-version >/dev/null 2>&1 || brew bundle install
+rg --pcre2-version >/dev/null 2>&1 || echo 'MISSING: rg with PCRE2 support, even after brew bundle install'
+
 rg -Pl "\Q$OLD\E(?!/v[0-9])(/|\")" --glob '*.go'
 ```
 
@@ -69,6 +74,12 @@ negative lookahead matters when `$OLD` has no version suffix (the v0/v1 case abo
 `github.com/foo/bar` is then a literal prefix of an already-migrated
 `github.com/foo/bar/v2/subpkg`, and without the lookahead the replace would corrupt it into
 `github.com/foo/bar/v2/v2/subpkg`. It's a no-op when `$OLD` is versioned.
+
+If the preflight still prints `MISSING` after the retry, stop and report it. `rg`'s default
+engine supports neither `\Q...\E` nor lookahead, so there's no drop-in substitute for the
+pattern — installing the PCRE2 library alone wouldn't have helped either, since PCRE2 support
+is compiled into the `rg` binary itself, not added by a separate library install. Fall back to
+inspecting the import lines by hand.
 
 Use the Edit tool (`sed -i` needs `sed -i ''` on macOS and is incompatible with GNU sed).
 
@@ -141,7 +152,8 @@ from step 4 are picked up automatically alongside the import replacements.
 - `git status --short` shows no uncommitted changes
 
 ```sh
-rg --pcre2-version >/dev/null || echo 'WARNING: rg lacks PCRE2 — the import check below cannot run'
+rg --pcre2-version >/dev/null 2>&1 || brew bundle install
+rg --pcre2-version >/dev/null 2>&1 || echo 'WARNING: rg missing or built without PCRE2, even after brew bundle install — the import check below cannot run'
 
 # Both of these must print nothing. Any output means the migration isn't finished.
 go mod edit -json | jq -r --arg old "$OLD" '.Require[] | select(.Path == $old) | .Path'
