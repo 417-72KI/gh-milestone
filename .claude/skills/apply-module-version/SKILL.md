@@ -37,8 +37,7 @@ NEW=github.com/google/go-github/v90   # example
 
 `$OLD` may have no version suffix at all — Go modules only add `/vN` to the import path
 starting at v2 (see https://go.dev/blog/v2-go-modules), so a v0/v1 → v2 bump looks like
-`OLD=github.com/foo/bar` / `NEW=github.com/foo/bar/v2`. This matters for the boundary
-rule in step 2: when `$OLD` has no suffix, it is a literal string prefix of `$NEW`.
+`OLD=github.com/foo/bar` / `NEW=github.com/foo/bar/v2`. Step 2's replace rule accounts for this.
 
 ### 2. Replace the imports
 
@@ -61,25 +60,35 @@ imported only at the root (`github.com/MakeNowJust/heredoc/v2`), some both ways
 Handling only the subpackage form leaves the old major imported, so `go mod tidy` keeps it
 in `go.mod` — exactly the state this skill exists to remove.
 
-Match `$OLD` only where the next character is `/` or `"` — that alone stops a shorter
-major from eating a longer one (`.../v2` would otherwise corrupt `.../v20/pkg`).
-
-If `$OLD` has no version suffix (the v0/v1 case above), add one more condition: the `/`
-must **not** be followed by `v` + digits. Without it, `$OLD` matches its own already-migrated
-form — `github.com/foo/bar` is a literal prefix of `github.com/foo/bar/v2/subpkg` — and
-rewriting that occurrence corrupts it into `github.com/foo/bar/v2/v2/subpkg`. Verify matches
-before editing:
+Match `$OLD` only where the next character is `/` or `"`, and where that `/` is not followed
+by `v` + digits. Both conditions always apply — verify matches before editing:
 
 ```sh
 rg -Pl "\Q$OLD\E(?!/v[0-9])(/|\")" --glob '*.go'
 ```
 
+The character boundary stops a shorter major from eating a longer one (`.../v2` would
+otherwise corrupt `.../v20/pkg`). The negative lookahead matters when `$OLD` has no version
+suffix (the v0/v1 case above): `github.com/foo/bar` is then a literal prefix of an
+already-migrated `github.com/foo/bar/v2/subpkg`, and without the lookahead the replace would
+corrupt it into `github.com/foo/bar/v2/v2/subpkg`. It's a no-op when `$OLD` is versioned.
+
 Use the Edit tool (`sed -i` needs `sed -i ''` on macOS and is incompatible with GNU sed).
 
 ### 3. Run go mod tidy to drop the old major
 
-**Always run this after the replacement.** go.sum doesn't have an `h1:` hash for the new
-major yet (only a `/go.mod` line) — building or testing before the replacement will fail.
+**Run this after the replacement, and before any build.** Renovate adds the new major to
+`go.mod`, but go.sum only gets its `/go.mod` line — not the `h1:` zip hash. That's harmless
+while the imports still point at the old major (`go build ./...` passes, since the new major
+isn't imported yet). The moment step 2 rewrites the imports, the build breaks until tidy
+fills in the hash:
+
+```
+missing go.sum entry for module providing package github.com/google/go-github/v90/github
+```
+
+`-mod=readonly` is the default from Go 1.16 on, so the build errors out instead of quietly
+adding the missing hash.
 
 ```sh
 go mod tidy
@@ -135,16 +144,22 @@ from step 4 are picked up automatically alongside the import replacements.
 - `git status --short` shows no uncommitted changes
 
 ```sh
-go mod edit -json | jq -e --arg old "$OLD" '.Require[] | select(.Path == $old)' \
-  && echo 'FAIL: old major still in go.mod' || echo 'OK: no old major in go.mod'
-rg -Pl "\Q$OLD\E(?!/v[0-9])(/|\")" --glob '*.go' \
-  && echo 'FAIL: old major still imported' || echo 'OK: no old major in imports'
-go build ./... && go vet ./... && echo 'OK: build/vet passed'
-make build && ./gh-milestone list && echo 'OK: runtime check passed'
+rg --pcre2-version >/dev/null || echo 'WARNING: rg lacks PCRE2 — the import check below cannot run'
+
+# Both of these must print nothing. Any output means the migration isn't finished.
+go mod edit -json | jq -r --arg old "$OLD" '.Require[] | select(.Path == $old) | .Path'
+rg -Pl "\Q$OLD\E(?!/v[0-9])(/|\")" --glob '*.go'
+
+go build ./... && go vet ./...
+make build && ./gh-milestone list
 git status --short
 ```
 
-Plain `rg "$OLD" go.mod` / `rg "$OLD" --glob '*.go'` would false-positive whenever `$OLD`
-has no version suffix, since `$OLD` is then a literal prefix of `$NEW` and matches every
-correctly-migrated line too. The `jq` check matches the exact `go.mod` require path instead
-of a substring, and the `.go` check reuses the same negative-lookahead rule from step 2.
+Read the output rather than branching on exit status. `cmd && echo FAIL || echo OK` prints
+`OK` whenever the tool itself fails — a missing `jq` (exit 127), a bad filter (exit 3), or
+`rg -P` on a build without PCRE2 (exit 2) — which hides a check that never actually ran.
+
+The `jq` check matches the exact `go.mod` require path instead of a plain substring grep,
+which would false-positive whenever `$OLD` has no version suffix (it's then a literal prefix
+of `$NEW` and matches every correctly-migrated line too). The `.go` check reuses the same
+negative-lookahead rule from step 2 for the same reason.
