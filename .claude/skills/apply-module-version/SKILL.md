@@ -41,12 +41,6 @@ starting at v2 (see https://go.dev/blog/v2-go-modules), so a v0/v1 → v2 bump l
 
 ### 2. Replace the imports
 
-List the affected files:
-
-```sh
-rg -l --glob '*.go' "$OLD"
-```
-
 Replace the module path in every import. Two forms both need handling — some modules are
 imported only at the root (`github.com/MakeNowJust/heredoc/v2`), some both ways
 (`github.com/cli/go-gh/v2` is imported bare in `cmd/gh-milestone/main.go` and as
@@ -60,18 +54,21 @@ imported only at the root (`github.com/MakeNowJust/heredoc/v2`), some both ways
 Handling only the subpackage form leaves the old major imported, so `go mod tidy` keeps it
 in `go.mod` — exactly the state this skill exists to remove.
 
-Match `$OLD` only where the next character is `/` or `"`, and where that `/` is not followed
-by `v` + digits. Both conditions always apply — verify matches before editing:
+List the affected files with the same rule the replacement must follow: match `$OLD` only
+where the next character is `/` or `"`, and where that `/` is not followed by `v` + digits.
+Both conditions always apply:
 
 ```sh
 rg -Pl "\Q$OLD\E(?!/v[0-9])(/|\")" --glob '*.go'
 ```
 
-The character boundary stops a shorter major from eating a longer one (`.../v2` would
-otherwise corrupt `.../v20/pkg`). The negative lookahead matters when `$OLD` has no version
-suffix (the v0/v1 case above): `github.com/foo/bar` is then a literal prefix of an
-already-migrated `github.com/foo/bar/v2/subpkg`, and without the lookahead the replace would
-corrupt it into `github.com/foo/bar/v2/v2/subpkg`. It's a no-op when `$OLD` is versioned.
+`\Q...\E` quotes `$OLD` so the dots in a module path stay literal — a bare `rg "$OLD"` would
+treat them as regex wildcards and match unrelated paths. The character boundary stops a
+shorter major from eating a longer one (`.../v2` would otherwise corrupt `.../v20/pkg`). The
+negative lookahead matters when `$OLD` has no version suffix (the v0/v1 case above):
+`github.com/foo/bar` is then a literal prefix of an already-migrated
+`github.com/foo/bar/v2/subpkg`, and without the lookahead the replace would corrupt it into
+`github.com/foo/bar/v2/v2/subpkg`. It's a no-op when `$OLD` is versioned.
 
 Use the Edit tool (`sed -i` needs `sed -i ''` on macOS and is incompatible with GNU sed).
 
