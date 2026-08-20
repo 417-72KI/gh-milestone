@@ -43,8 +43,23 @@ List the affected files:
 rg -l --glob '*.go' "$OLD"
 ```
 
-Replace `"$OLD/..."` with `"$NEW/..."` in each file. Use the Edit tool
-(`sed -i` needs `sed -i ''` on macOS and is incompatible with GNU sed).
+Replace the module path in every import. Two forms both need handling — some modules are
+imported only at the root (`github.com/MakeNowJust/heredoc/v2`), some both ways
+(`github.com/cli/go-gh/v2` is imported bare in `cmd/gh-milestone/main.go` and as
+`/pkg/text` elsewhere):
+
+| form | before | after |
+| --- | --- | --- |
+| subpackage | `"$OLD/github"` | `"$NEW/github"` |
+| module root | `"$OLD"` | `"$NEW"` |
+
+Handling only the subpackage form leaves the old major imported, so `go mod tidy` keeps it
+in `go.mod` — exactly the state this skill exists to remove.
+
+Match `$OLD` only where the next character is `/` or `"`. A bare substring replace would
+let a shorter major eat a longer one (`.../v2` would corrupt `.../v20/pkg`).
+
+Use the Edit tool (`sed -i` needs `sed -i ''` on macOS and is incompatible with GNU sed).
 
 ### 3. Run go mod tidy to drop the old major
 
@@ -86,14 +101,15 @@ needs `gh` auth and network access. If unavailable, skip it and report that you 
 Skip committing if there's nothing to commit. Split into two commits to match past convention.
 
 ```sh
-git add $(rg -l --glob '*.go' "$NEW")
+git add -u -- '*.go'
 git commit -m 'replace import'
 
 git add go.mod go.sum
 git commit -m 'run `go mod tidy`'
 ```
 
-If step 4 required additional call-site fixes, include those in the `replace import` commit.
+`git add -u -- '*.go'` stages every modified tracked `.go` file, so any call-site fixes
+from step 4 are picked up automatically alongside the import replacements.
 
 ## Definition of done
 
