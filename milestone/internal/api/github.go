@@ -59,17 +59,17 @@ func ghClient(ctx context.Context, ops ...clientOption) (*github.Client, error) 
 	}
 	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token})
 	tc := oauth2.NewClient(ctx, ts)
-	client := github.NewClient(tc)
+	clientOpts := []github.ClientOptionsFunc{github.WithHTTPClient(tc)}
 	baseURL := os.Getenv("GITHUB_BASE_URL")
 	if opts.baseURL != "" && !strings.HasPrefix(opts.baseURL, "https://github.com") {
 		baseURL = opts.baseURL
 	}
 	if baseURL != "" {
-		var err error
-		client, err = github.NewEnterpriseClient(baseURL, baseURL, tc)
-		if err != nil {
-			return nil, fmt.Errorf("failed to create a new github api client: %w", err)
-		}
+		clientOpts = append(clientOpts, github.WithEnterpriseURLs(baseURL, baseURL))
+	}
+	client, err := github.NewClient(clientOpts...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create a new github api client: %w", err)
 	}
 	return client, nil
 }
