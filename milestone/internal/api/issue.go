@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/cli/cli/v2/pkg/iostreams"
-	"github.com/google/go-github/v85/github"
+	"github.com/google/go-github/v90/github"
 
 	"github.com/417-72KI/gh-milestone/milestone/internal/ghrepo"
 )
