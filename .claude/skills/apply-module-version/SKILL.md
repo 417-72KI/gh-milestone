@@ -83,6 +83,18 @@ inspecting the import lines by hand.
 
 Use the Edit tool (`sed -i` needs `sed -i ''` on macOS and is incompatible with GNU sed).
 
+Commit this right away, before step 3. Doing it now — while the only diff is the mechanical
+path swap — keeps this commit pure even if step 4 later needs call-site fixes in the same
+files (e.g. `internal/api/github.go` importing the new path AND needing its client-construction
+code rewritten for a breaking change): those land as their own commit, not lumped in here.
+
+```sh
+git add -u -- '*.go'
+git commit -m 'replace import'
+```
+
+Skip this (and any commit step below) if there's nothing to commit.
+
 ### 3. Run go mod tidy to drop the old major
 
 **Run this after the replacement, and before any build.** Renovate adds the new major to
@@ -127,21 +139,21 @@ needs `gh` auth and network access. If unavailable, skip it and report that you 
 - Check the target module's release notes / CHANGELOG for breaking changes and fix the call sites
 - If the fix requires a design decision or is broad in scope, stop and report it instead of
   silently working around it or hacking something together just to make it compile
-
-### 5. Commit
-
-Skip committing if there's nothing to commit. Split into two commits to match past convention.
+- Commit the fix on its own, separate from both the `replace import` commit (step 2) and the
+  `go mod tidy` commit (step 5), with a message describing the API change (e.g. `fix breaking
+  client construction API in go-github v90`) — not a generic message shared with either of those:
 
 ```sh
 git add -u -- '*.go'
-git commit -m 'replace import'
+git commit -m 'fix breaking client construction API in go-github v90'   # example message
+```
 
+### 5. Commit the go.mod/go.sum update
+
+```sh
 git add go.mod go.sum
 git commit -m 'run `go mod tidy`'
 ```
-
-`git add -u -- '*.go'` stages every modified tracked `.go` file, so any call-site fixes
-from step 4 are picked up automatically alongside the import replacements.
 
 ## Definition of done
 
