@@ -5,7 +5,7 @@ go 1.26.1
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
 	github.com/cli/cli/v2 v2.99.0
-	github.com/cli/go-gh/v2 v2.15.0
+	github.com/cli/go-gh/v2 v2.16.0
 	github.com/google/go-github/v90 v90.0.0
 	github.com/spf13/cobra v1.10.2
 	golang.org/x/oauth2 v0.37.0
