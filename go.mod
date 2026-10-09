@@ -4,7 +4,7 @@ go 1.27.0
 
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
-	github.com/cli/cli/v2 v2.101.0
+	github.com/cli/cli/v2 v2.102.0
 	github.com/cli/go-gh/v2 v2.16.1
 	github.com/google/go-github/v90 v90.0.0
 	github.com/spf13/cobra v1.10.2
@@ -13,7 +13,7 @@ require (
 
 require (
 	charm.land/bubbles/v2 v2.2.1 // indirect
-	charm.land/bubbletea/v2 v2.0.9 // indirect
+	charm.land/bubbletea/v2 v2.0.10 // indirect
 	charm.land/huh/v2 v2.0.3 // indirect
 	charm.land/lipgloss/v2 v2.0.6 // indirect
 	dario.cat/mergo v1.0.2 // indirect
