@@ -27,6 +27,7 @@ func NewRootCmd(f *cmdutil.Factory) *cobra.Command {
 		newListCmd(f),
 	)
 	cmdutil.AddGroup(rootCmd, "Targeted Commands",
+		newIssuesCmd(f),
 		newViewCmd(f),
 		newCloseCmd(f),
 		newReopenCmd(f),
