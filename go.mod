@@ -4,7 +4,7 @@ go 1.27.0
 
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
-	github.com/cli/cli/v2 v2.103.3
+	github.com/cli/cli/v2 v2.104.0
 	github.com/cli/go-gh/v2 v2.17.0
 	github.com/google/go-github/v90 v90.0.0
 	github.com/spf13/cobra v1.10.2
@@ -13,10 +13,10 @@ require (
 
 require (
 	charm.land/bubbles/v2 v2.2.1 // indirect
-	charm.land/bubbletea/v2 v2.1.0 // indirect
+	charm.land/bubbletea/v2 v2.1.1 // indirect
 	charm.land/glamour/v2 v2.0.2-0.20261015065741-010543cac1a0 // indirect
 	charm.land/huh/v2 v2.0.3 // indirect
-	charm.land/lipgloss/v2 v2.0.6 // indirect
+	charm.land/lipgloss/v2 v2.1.0 // indirect
 	dario.cat/mergo v1.0.2 // indirect
 	github.com/AlecAivazis/survey/v2 v2.3.7 // indirect
 	github.com/MakeNowJust/heredoc v1.0.0 // indirect
@@ -79,19 +79,19 @@ require (
 	github.com/shurcooL/githubv4 v0.0.0-20240727222349-48295856cce7 // indirect
 	github.com/shurcooL/graphql v0.0.0-20230722043721-ed46e5a46466 // indirect
 	github.com/spf13/cast v1.10.0 // indirect
-	github.com/spf13/pflag v1.0.10 // indirect
+	github.com/spf13/pflag v1.1.0 // indirect
 	github.com/stretchr/objx v0.5.3 // indirect
 	github.com/stretchr/testify v1.12.1 // indirect
 	github.com/thlib/go-timezone-local v0.0.9 // indirect
 	github.com/xo/terminfo v1.0.0 // indirect
-	github.com/yuin/goldmark v1.8.6 // indirect
+	github.com/yuin/goldmark v1.8.7 // indirect
 	github.com/yuin/goldmark-emoji v1.0.6 // indirect
 	github.com/zalando/go-keyring v0.2.8 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/crypto v0.58.0 // indirect
-	golang.org/x/net v0.60.0 // indirect
-	golang.org/x/sync v0.24.0 // indirect
-	golang.org/x/sys v0.49.0 // indirect
+	golang.org/x/net v0.61.0 // indirect
+	golang.org/x/sync v0.25.0 // indirect
+	golang.org/x/sys v0.50.0 // indirect
 	golang.org/x/term v0.47.0 // indirect
 	golang.org/x/text v0.43.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
